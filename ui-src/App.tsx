@@ -1,4 +1,3 @@
-import "./ui.macaron";
 import { MessageToPlugin, MessageToUI } from "../message";
 import { Buffer } from "buffer";
 import "./main.css";
