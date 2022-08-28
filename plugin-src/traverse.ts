@@ -1,4 +1,4 @@
-import { compact } from "lodash";
+import { compact } from "lodash-es";
 import type * as hast from "hast";
 import { h } from "hastscript";
 import * as svgParser from "svg-parser";
