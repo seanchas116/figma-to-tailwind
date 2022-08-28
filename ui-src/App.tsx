@@ -47,7 +47,7 @@ export const App: React.FC = () => {
       window.removeEventListener("message", onWindowMessage);
       document.removeEventListener("copy", onDocumentCopy);
     };
-  });
+  }, []);
 
   const onCopyButtonClick = () => {
     postMessageToPlugin({ type: "copy" });
