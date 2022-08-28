@@ -1,0 +1,37 @@
+{
+  "name": "figma-to-tailwind",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Figma Layers to Tailwind HTML/JSX (utilizing JIT and custom configs)",
+  "license": "MIT License",
+  "scripts": {
+    "build": "yarn run build:ui && yarn run build:main",
+    "build:main": "esbuild plugin-src/code.ts --bundle --outfile=dist/code.js",
+    "build:ui": "npx vite build --minify esbuild --emptyOutDir=false",
+    "build:watch": "concurrently -n widget,iframe \"yarn run build:main -- --watch\" \"yarn run build:ui -- --watch\"",
+    "dev": "concurrently -n tsc,build,vite 'yarn:tsc:watch' 'yarn:build:watch' 'vite'",
+    "format": "prettier --write .",
+    "tsc": "yarn run tsc:main && yarn run tsc:ui",
+    "tsc:main": "tsc --noEmit -p plugin-src",
+    "tsc:ui": "tsc --noEmit -p ui-src",
+    "tsc:watch": "concurrently -n widget,iframe \"yarn run tsc:main -- --watch --preserveWatchOutput\" \"npm run tsc:ui -- --watch --preserveWatchOutput\""
+  },
+  "dependencies": {
+    "@types/hast": "^2.3.4",
+    "buffer": "^6.0.3",
+    "csstype": "^3.1.0",
+    "hastscript": "^7.0.2",
+    "svg-parser": "^2.0.4"
+  },
+  "devDependencies": {
+    "@figma/plugin-typings": "^1.49.0",
+    "@macaron-elements/loader-vite": "*",
+    "concurrently": "^7.2.2",
+    "esbuild": "^0.14.47",
+    "prettier": "^2.7.1",
+    "typescript": "^4.7.4",
+    "vite": "^2.9.12",
+    "vite-plugin-singlefile": "^0.9.0",
+    "vite-svg-loader": "^3.4.0"
+  }
+}

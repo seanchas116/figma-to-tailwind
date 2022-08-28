@@ -1,0 +1,8 @@
+{
+  "name": "figma-to-tailwind",
+  "id": "figma-to-tailwind",
+  "api": "1.0.0",
+  "main": "dist/code.js",
+  "editorType": ["figma"],
+  "ui": "dist/index.html"
+}
