@@ -1,6 +1,7 @@
 import "./ui.macaron";
 import { MessageToPlugin, MessageToUI } from "../message";
 import { Buffer } from "buffer";
+import "./main.css";
 
 const ui = document.querySelector("macaron-figma-ui")!;
 const copyButtonElement = ui.shadowRoot!.querySelector(
