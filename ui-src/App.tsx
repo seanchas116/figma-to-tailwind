@@ -54,7 +54,11 @@ export const App: React.FC = () => {
 
   return (
     <div>
-      <button disabled={selectedLayerCount === 0} onClick={onCopyButtonClick}>
+      <button
+        className="bg-blue-500"
+        disabled={selectedLayerCount === 0}
+        onClick={onCopyButtonClick}
+      >
         Copy Selected Layers
       </button>
       <div>
