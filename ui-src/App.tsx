@@ -53,15 +53,15 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="p-4 flex flex-col gap-4">
       <button
-        className="bg-blue-500"
+        className="bg-blue-500 text-white leading-[40px] h-[40px] rounded w-full"
         disabled={selectedLayerCount === 0}
         onClick={onCopyButtonClick}
       >
         Copy Selected Layers
       </button>
-      <div>
+      <div className="text-center text-gray-400 text-sm">
         {selectedLayerCount === 0
           ? "No layers selected"
           : selectedLayerCount === 1
