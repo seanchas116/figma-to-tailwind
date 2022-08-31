@@ -1,10 +1,10 @@
 import { MessageToPlugin, MessageToUI } from "../message";
 import { Buffer } from "buffer";
-import "./main.css";
 import { useEffect, useRef, useState } from "react";
 import React from "react";
 import Prism from "prismjs";
-import "prismjs/themes/prism.css";
+import "./main.css";
+import "prism-themes/themes/prism-material-dark.css";
 
 function postMessageToPlugin(data: MessageToPlugin): void {
   parent.postMessage({ pluginMessage: data }, "*");
@@ -64,15 +64,19 @@ export const App: React.FC = () => {
       >
         Copy
       </button>
-      <div
-        dangerouslySetInnerHTML={{
-          __html: Prism.highlight(
-            result,
-            Prism.languages.javascript,
-            "javascript"
-          ),
-        }}
-      />
+      <pre>
+        <code
+          className="language-javascript"
+          style={{ whiteSpace: "pre-wrap" }}
+          dangerouslySetInnerHTML={{
+            __html: Prism.highlight(
+              result,
+              Prism.languages.javascript,
+              "javascript"
+            ),
+          }}
+        />
+      </pre>
     </div>
   );
 };
