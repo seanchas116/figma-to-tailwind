@@ -1,13 +1,10 @@
 import { figmaToMacaron } from "./traverse";
 import { compact } from "lodash-es";
-import { IDGenerator } from "./util";
 import { MessageToPlugin, MessageToUI } from "../message";
 
 figma.showUI(__html__, { width: 800, height: 600 });
 
 async function generateContent() {
-  const idGenerator = new IDGenerator();
-
   const selection = figma.currentPage.selection;
 
   const sizes = selection.map((node) => {
@@ -25,9 +22,7 @@ async function generateContent() {
 
   const macaronLayers = compact(
     await Promise.all(
-      selection.map((node) =>
-        figmaToMacaron(idGenerator, node, undefined, { x: 0, y: 0 })
-      )
+      selection.map((node) => figmaToMacaron(node, undefined, { x: 0, y: 0 }))
     )
   );
 

@@ -19,15 +19,10 @@ import {
 import { twMerge } from "tailwind-merge";
 
 export async function figmaToMacaron(
-  idGenerator: IDGenerator,
   node: SceneNode,
   parentLayout: BaseFrameMixin["layoutMode"] | undefined,
   groupTopLeft: Vector = { x: 0, y: 0 }
 ): Promise<hast.Content | undefined> {
-  // TODO: id from layer name
-
-  const id = idGenerator.generate(node.name);
-
   if (!node.visible) {
     // TODO: support visibility
     return undefined;
@@ -52,7 +47,6 @@ export async function figmaToMacaron(
         : undefined;
 
       return h("img", {
-        id,
         src: dataURL,
         className: twMerge(
           positionStyle(node, parentLayout, groupTopLeft),
@@ -77,7 +71,6 @@ export async function figmaToMacaron(
         ...svgElem,
         properties: {
           ...svgElem.properties,
-          id,
           className: twMerge(
             positionStyle(node, parentLayout, groupTopLeft),
             effectStyle(node as BlendMixin)
@@ -95,7 +88,6 @@ export async function figmaToMacaron(
       return h(
         "div",
         {
-          id,
           className: twMerge(
             positionStyle(node, parentLayout, groupTopLeft),
             textStyle(node),
@@ -112,7 +104,6 @@ export async function figmaToMacaron(
       return h(
         "div",
         {
-          id,
           className: twMerge(
             fillBorderStyle(node),
             layoutStyle(node),
@@ -124,7 +115,6 @@ export async function figmaToMacaron(
           await Promise.all(
             node.children.map((child) =>
               figmaToMacaron(
-                idGenerator,
                 child,
                 node.layoutMode,
                 node.strokes.length
@@ -143,13 +133,12 @@ export async function figmaToMacaron(
       return h(
         "div",
         {
-          id,
           className: twMerge(positionStyle(node, parentLayout, groupTopLeft)),
         },
         ...compact(
           await Promise.all(
             node.children.map((child) =>
-              figmaToMacaron(idGenerator, child, "NONE", {
+              figmaToMacaron(child, "NONE", {
                 x: node.x,
                 y: node.y,
               })
