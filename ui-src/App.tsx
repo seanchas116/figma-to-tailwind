@@ -3,6 +3,7 @@ import { Buffer } from "buffer";
 import { useEffect, useRef, useState } from "react";
 import React from "react";
 import Prism from "prismjs";
+import "prismjs/components/prism-jsx";
 import "./main.css";
 import "prism-themes/themes/prism-material-dark.css";
 
@@ -66,14 +67,15 @@ export const App: React.FC = () => {
       </button>
       <pre>
         <code
-          className="language-javascript"
-          style={{ whiteSpace: "pre-wrap" }}
+          className="language-jsx"
+          style={{
+            whiteSpace: "pre-wrap",
+            fontSize: "12px",
+            fontFamily:
+              "ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace",
+          }}
           dangerouslySetInnerHTML={{
-            __html: Prism.highlight(
-              result,
-              Prism.languages.javascript,
-              "javascript"
-            ),
+            __html: Prism.highlight(result, Prism.languages.jsx, "jsx"),
           }}
         />
       </pre>
