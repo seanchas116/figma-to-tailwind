@@ -4,33 +4,32 @@ import { toHtml } from "hast-util-to-html";
 import { IDGenerator } from "./util";
 import { MessageToPlugin, MessageToUI } from "../message";
 
-figma.showUI(__html__, { width: 300, height: 100 });
+figma.showUI(__html__, { width: 600, height: 600 });
+
+async function generateContent() {
+  const idGenerator = new IDGenerator();
+
+  const macaronLayers = compact(
+    await Promise.all(
+      figma.currentPage.selection.map((node) =>
+        figmaToMacaron(idGenerator, node, undefined, { x: 0, y: 0 })
+      )
+    )
+  );
+
+  const html = toHtml(macaronLayers);
+
+  const messageToUI: MessageToUI = {
+    type: "change",
+    data: html,
+  };
+  figma.ui.postMessage(messageToUI);
+}
 
 figma.ui.onmessage = async (msg: MessageToPlugin) => {
   switch (msg.type) {
-    case "copy": {
-      if (figma.currentPage.selection.length === 0) {
-        figma.notify("Select a layer to copy");
-        return;
-      }
-
-      const idGenerator = new IDGenerator();
-
-      const macaronLayers = compact(
-        await Promise.all(
-          figma.currentPage.selection.map((node) =>
-            figmaToMacaron(idGenerator, node, undefined, { x: 0, y: 0 })
-          )
-        )
-      );
-
-      const html = toHtml(macaronLayers);
-
-      const messageToUI: MessageToUI = {
-        type: "copy",
-        data: html,
-      };
-      figma.ui.postMessage(messageToUI);
+    case "ready": {
+      await generateContent();
       break;
     }
     case "notify": {
@@ -40,14 +39,4 @@ figma.ui.onmessage = async (msg: MessageToPlugin) => {
   }
 };
 
-const onSelectionChange = () => {
-  const msg: MessageToUI = {
-    type: "selectionChange",
-    count: figma.currentPage.selection.length,
-  };
-
-  figma.ui.postMessage(msg);
-};
-
-figma.on("selectionchange", onSelectionChange);
-onSelectionChange();
+figma.on("selectionchange", generateContent);

@@ -10,7 +10,7 @@ function postMessageToPlugin(data: MessageToPlugin): void {
 
 export const App: React.FC = () => {
   let htmlToCopyRef = useRef<string | undefined>();
-  const [selectedLayerCount, setSelectedLayerCount] = useState(0);
+  const [result, setResult] = useState("");
 
   useEffect(() => {
     const onDocumentCopy = (e: ClipboardEvent) => {
@@ -23,24 +23,17 @@ export const App: React.FC = () => {
 
     const onWindowMessage = (e: MessageEvent) => {
       const msg: MessageToUI = e.data.pluginMessage;
-      if (msg.type === "copy") {
-        const fragmentString: string = msg.data;
-        const base64 = Buffer.from(fragmentString).toString("base64");
-        const encoded = `<span data-macaron="${base64}"></span>`;
-        htmlToCopyRef.current = encoded;
-        document.execCommand("copy");
-
-        postMessageToPlugin({
-          type: "notify",
-          data: "Copied to clipboard. Paste in Macaron",
-        });
-      } else if (msg.type === "selectionChange") {
-        setSelectedLayerCount(msg.count);
+      if (msg.type === "change") {
+        setResult(msg.data);
       }
     };
 
     window.addEventListener("message", onWindowMessage);
     document.addEventListener("copy", onDocumentCopy);
+
+    postMessageToPlugin({
+      type: "ready",
+    });
 
     return () => {
       window.removeEventListener("message", onWindowMessage);
@@ -49,25 +42,27 @@ export const App: React.FC = () => {
   }, []);
 
   const onCopyButtonClick = () => {
-    postMessageToPlugin({ type: "copy" });
+    const base64 = Buffer.from(result).toString("base64");
+    const encoded = `<span data-macaron="${base64}"></span>`;
+    htmlToCopyRef.current = encoded;
+    document.execCommand("copy");
+
+    postMessageToPlugin({
+      type: "notify",
+      data: "Copied to clipboard. Paste in Macaron",
+    });
   };
 
   return (
     <div className="p-4 flex flex-col gap-4">
       <button
         className="bg-blue-500 text-white leading-[40px] h-[40px] rounded w-full"
-        disabled={selectedLayerCount === 0}
+        disabled={!result}
         onClick={onCopyButtonClick}
       >
-        Copy Selected Layers
+        Copy
       </button>
-      <div className="text-center text-gray-400 text-sm">
-        {selectedLayerCount === 0
-          ? "No layers selected"
-          : selectedLayerCount === 1
-          ? "1 layer selected"
-          : `${selectedLayerCount} layers selected`}
-      </div>
+      <pre className="whitespace-pre-wrap text-xs">{result}</pre>
     </div>
   );
 };

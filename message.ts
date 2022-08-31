@@ -1,18 +1,13 @@
 export type MessageToPlugin =
   | {
-      type: "copy";
+      type: "ready";
     }
   | {
       type: "notify";
       data: string;
     };
 
-export type MessageToUI =
-  | {
-      type: "copy";
-      data: string;
-    }
-  | {
-      type: "selectionChange";
-      count: number;
-    };
+export type MessageToUI = {
+  type: "change";
+  data: string;
+};
