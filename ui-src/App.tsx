@@ -16,12 +16,9 @@ function postMessageToPlugin(data: MessageToPlugin): void {
 export const App: React.FC = () => {
   let htmlToCopyRef = useRef<string | undefined>();
   const [htmlOutput, setHTMLOutput] = useState("");
-
-  const iframeRef = React.createRef<HTMLIFrameElement>();
+  const [contentSize, setContentSize] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
-    const iframe = iframeRef.current;
-
     const onDocumentCopy = (e: ClipboardEvent) => {
       if (htmlToCopyRef.current) {
         e.preventDefault();
@@ -37,7 +34,15 @@ export const App: React.FC = () => {
         const root = msg.data;
         const html = toHtml(root);
 
+        let width = 0;
+        let height = 0;
+        for (const size of msg.sizes) {
+          width = Math.max(width, size.width);
+          height += size.height;
+        }
+
         setHTMLOutput(formatHTML(html));
+        setContentSize({ width, height });
       }
     };
 
@@ -94,7 +99,7 @@ export const App: React.FC = () => {
           />
         </pre>
         <div className="rounded border border-gray-200 overflow-hidden">
-          <Preview htmlOutput={htmlOutput} />
+          <Preview htmlOutput={htmlOutput} contentSize={contentSize} />
         </div>
       </div>
     </div>
@@ -103,8 +108,11 @@ export const App: React.FC = () => {
 
 const Preview: React.FC<{
   htmlOutput: string;
-}> = ({ htmlOutput }) => {
+  contentSize: { width: number; height: number };
+}> = ({ htmlOutput, contentSize }) => {
   const iframeRef = React.createRef<HTMLIFrameElement>();
+
+  console.log(contentSize);
 
   const srcdoc = `
     <!DOCTYPE html>
