@@ -80,7 +80,10 @@ export function layoutStyle(node: BaseFrameMixin): string[] {
   if (node.layoutMode === "VERTICAL") {
     classes.push("flex-col");
   }
-  classes.push(`gap-[${node.itemSpacing}px]`);
+
+  if (node.itemSpacing) {
+    classes.push(`gap-[${node.itemSpacing}px]`);
+  }
   // style.paddingLeft = Math.max(0, node.paddingLeft - node.strokeWeight) + "px";
   // style.paddingRight =
   //   Math.max(0, node.paddingRight - node.strokeWeight) + "px";
@@ -94,21 +97,20 @@ export function layoutStyle(node: BaseFrameMixin): string[] {
     node.paddingTop === node.paddingBottom &&
     node.paddingTop === node.paddingLeft
   ) {
-    if (node.paddingTop !== 0) classes.push(`p-[${node.paddingTop}px]`);
+    if (node.paddingTop) classes.push(`p-[${node.paddingTop}px]`);
   } else {
     if (node.paddingTop === node.paddingBottom) {
-      if (node.paddingTop !== 0) classes.push(`py-[${node.paddingTop}px]`);
+      if (node.paddingTop) classes.push(`py-[${node.paddingTop}px]`);
     } else {
-      if (node.paddingTop !== 0) classes.push(`pt-[${node.paddingTop}px]`);
-      if (node.paddingRight !== 0) classes.push(`pr-[${node.paddingRight}px]`);
+      if (node.paddingTop) classes.push(`pt-[${node.paddingTop}px]`);
+      if (node.paddingRight) classes.push(`pr-[${node.paddingRight}px]`);
     }
 
     if (node.paddingLeft === node.paddingRight) {
-      if (node.paddingLeft !== 0) classes.push(`px-[${node.paddingLeft}px]`);
+      if (node.paddingLeft) classes.push(`px-[${node.paddingLeft}px]`);
     } else {
-      if (node.paddingBottom !== 0)
-        classes.push(`pb-[${node.paddingBottom}px]`);
-      if (node.paddingLeft !== 0) classes.push(`pl-[${node.paddingLeft}px]`);
+      if (node.paddingBottom) classes.push(`pb-[${node.paddingBottom}px]`);
+      if (node.paddingLeft) classes.push(`pl-[${node.paddingLeft}px]`);
     }
   }
 
@@ -190,20 +192,20 @@ export function fillBorderStyle(node: BaseFrameMixin): string[] {
       node.strokeTopWeight === node.strokeLeftWeight &&
       node.strokeTopWeight === node.strokeRightWeight
     ) {
-      if (node.strokeTopWeight !== 0) {
+      if (node.strokeTopWeight) {
         classes.push(`border-[${node.strokeTopWeight}px]`);
       }
     } else {
-      if (node.strokeTopWeight !== 0) {
+      if (node.strokeTopWeight) {
         classes.push(`border-t-[${node.strokeTopWeight}px]`);
       }
-      if (node.strokeBottomWeight !== 0) {
+      if (node.strokeBottomWeight) {
         classes.push(`border-b-[${node.strokeBottomWeight}px]`);
       }
-      if (node.strokeLeftWeight !== 0) {
+      if (node.strokeLeftWeight) {
         classes.push(`border-l-[${node.strokeLeftWeight}px]`);
       }
-      if (node.strokeRightWeight !== 0) {
+      if (node.strokeRightWeight) {
         classes.push(`border-r-[${node.strokeRightWeight}px]`);
       }
     }
@@ -215,20 +217,20 @@ export function fillBorderStyle(node: BaseFrameMixin): string[] {
     node.topLeftRadius === node.bottomLeftRadius &&
     node.topLeftRadius === node.bottomRightRadius
   ) {
-    if (node.topLeftRadius !== 0) {
+    if (node.topLeftRadius) {
       classes.push(`rounded-[${node.topLeftRadius}px]`);
     }
   } else {
-    if (node.topLeftRadius !== 0) {
-      classes.push(`rounded-t-[${node.topLeftRadius}px]`);
+    if (node.topLeftRadius) {
+      classes.push(`rounded-tl-[${node.topLeftRadius}px]`);
     }
-    if (node.topRightRadius !== 0) {
-      classes.push(`rounded-r-[${node.topRightRadius}px]`);
+    if (node.topRightRadius) {
+      classes.push(`rounded-tr-[${node.topRightRadius}px]`);
     }
-    if (node.bottomLeftRadius !== 0) {
-      classes.push(`rounded-b-[${node.bottomLeftRadius}px]`);
+    if (node.bottomLeftRadius) {
+      classes.push(`rounded-bl-[${node.bottomLeftRadius}px]`);
     }
-    if (node.bottomRightRadius !== 0) {
+    if (node.bottomRightRadius) {
       classes.push(`rounded-br-[${node.bottomRightRadius}px]`);
     }
   }
