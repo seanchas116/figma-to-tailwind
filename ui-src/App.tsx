@@ -38,6 +38,8 @@ export const App: React.FC = () => {
         const root = msg.data;
         const html = toHtml(root);
 
+        console.log(msg.sizes);
+
         if (iframe) {
           console.log("change srcdoc");
           iframe.srcdoc = `

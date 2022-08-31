@@ -12,4 +12,8 @@ export type MessageToPlugin =
 export type MessageToUI = {
   type: "change";
   data: hast.Root;
+  sizes: {
+    width: number;
+    height: number;
+  }[];
 };

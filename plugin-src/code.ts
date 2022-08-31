@@ -8,9 +8,24 @@ figma.showUI(__html__, { width: 800, height: 600 });
 async function generateContent() {
   const idGenerator = new IDGenerator();
 
+  const selection = figma.currentPage.selection;
+
+  const sizes = selection.map((node) => {
+    if ("width" in node) {
+      return {
+        width: node.width,
+        height: node.height,
+      };
+    }
+    return {
+      width: 0,
+      height: 0,
+    };
+  });
+
   const macaronLayers = compact(
     await Promise.all(
-      figma.currentPage.selection.map((node) =>
+      selection.map((node) =>
         figmaToMacaron(idGenerator, node, undefined, { x: 0, y: 0 })
       )
     )
@@ -22,6 +37,7 @@ async function generateContent() {
       type: "root",
       children: macaronLayers,
     },
+    sizes,
   };
   figma.ui.postMessage(messageToUI);
 }
