@@ -3,9 +3,11 @@ import { Buffer } from "buffer";
 import { useEffect, useRef, useState } from "react";
 import React from "react";
 import Prism from "prismjs";
+
 import "prismjs/components/prism-jsx";
 import "./main.css";
 import "prism-themes/themes/prism-material-dark.css";
+import { formatJS } from "./format";
 
 function postMessageToPlugin(data: MessageToPlugin): void {
   parent.postMessage({ pluginMessage: data }, "*");
@@ -27,7 +29,7 @@ export const App: React.FC = () => {
     const onWindowMessage = (e: MessageEvent) => {
       const msg: MessageToUI = e.data.pluginMessage;
       if (msg.type === "change") {
-        setResult(msg.data);
+        setResult(formatJS(msg.data));
       }
     };
 
