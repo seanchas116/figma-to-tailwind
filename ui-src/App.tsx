@@ -41,7 +41,6 @@ export const App: React.FC = () => {
         console.log(msg.sizes);
 
         if (iframe) {
-          console.log("change srcdoc");
           iframe.srcdoc = `
             <!DOCTYPE html>
             <html>
