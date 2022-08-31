@@ -1,6 +1,7 @@
 import { compact } from "lodash-es";
 import type * as hast from "hast";
 import { h } from "hastscript";
+// @ts-ignore
 import * as svgParser from "svg-parser";
 import {
   imageToDataURL,
