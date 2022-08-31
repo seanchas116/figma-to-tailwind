@@ -260,8 +260,14 @@ export function effectStyle(node: BlendMixin): Style {
 
 export function stringifyStyle(style: Style): string {
   const styleString = Object.entries(style)
-    .map(([key, value]) => (value != null ? `${key}: ${value};` : ""))
+    .map(([key, value]) =>
+      value != null ? `${kebabCase(key)}: ${value};` : ""
+    )
     .join("");
 
   return styleString;
+}
+
+function kebabCase(str: string): string {
+  return str.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
 }
