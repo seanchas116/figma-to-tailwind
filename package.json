@@ -23,6 +23,7 @@
     "hast-util-to-html": "^8.0.3",
     "hastscript": "^7.0.2",
     "lodash-es": "^4.17.21",
+    "prismjs": "^1.29.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "svg-parser": "^2.0.4"
@@ -31,6 +32,7 @@
     "@figma/plugin-typings": "^1.49.0",
     "@macaron-elements/loader-vite": "*",
     "@types/lodash-es": "^4.17.6",
+    "@types/prismjs": "^1.26.0",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
     "autoprefixer": "^10.4.8",

@@ -3,6 +3,8 @@ import { Buffer } from "buffer";
 import "./main.css";
 import { useEffect, useRef, useState } from "react";
 import React from "react";
+import Prism from "prismjs";
+import "prismjs/themes/prism.css";
 
 function postMessageToPlugin(data: MessageToPlugin): void {
   parent.postMessage({ pluginMessage: data }, "*");
@@ -62,7 +64,15 @@ export const App: React.FC = () => {
       >
         Copy
       </button>
-      <pre className="whitespace-pre-wrap text-xs">{result}</pre>
+      <div
+        dangerouslySetInnerHTML={{
+          __html: Prism.highlight(
+            result,
+            Prism.languages.javascript,
+            "javascript"
+          ),
+        }}
+      />
     </div>
   );
 };
