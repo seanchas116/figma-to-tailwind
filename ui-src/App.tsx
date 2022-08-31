@@ -22,7 +22,7 @@ export const App: React.FC = () => {
     const onDocumentCopy = (e: ClipboardEvent) => {
       if (htmlToCopyRef.current) {
         e.preventDefault();
-        e.clipboardData?.setData("text/html", htmlToCopyRef.current);
+        e.clipboardData?.setData("text/plain", htmlToCopyRef.current);
         htmlToCopyRef.current = undefined;
       }
     };
@@ -60,9 +60,7 @@ export const App: React.FC = () => {
   }, []);
 
   const onCopyButtonClick = () => {
-    const base64 = Buffer.from(htmlOutput).toString("base64");
-    const encoded = `<span data-macaron="${base64}"></span>`;
-    htmlToCopyRef.current = encoded;
+    htmlToCopyRef.current = htmlOutput;
     document.execCommand("copy");
 
     postMessageToPlugin({
