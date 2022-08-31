@@ -293,9 +293,7 @@ export function textStyle(node: TextNode): string[] {
 
   const classes: string[] = [];
 
-  if (node.textAutoResize !== "WIDTH_AND_HEIGHT") {
-    classes.push(`text-${textAlign(node.textAlignHorizontal)}`);
-  }
+  classes.push(`text-${textAlign(node.textAlignHorizontal)}`);
 
   if (fontSize !== figma.mixed) {
     classes.push(`text-[${fontSize}px]`);
