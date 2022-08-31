@@ -88,10 +88,29 @@ export function layoutStyle(node: BaseFrameMixin): string[] {
   // style.paddingBottom =
   //   Math.max(0, node.paddingBottom - node.strokeWeight) + "px";
   // TODO: offset border?
-  classes.push(`pl-[${node.paddingLeft}px]`);
-  classes.push(`pr-[${node.paddingRight}px]`);
-  classes.push(`pt-[${node.paddingTop}px]`);
-  classes.push(`pb-[${node.paddingBottom}px]`);
+
+  if (
+    node.paddingTop === node.paddingRight &&
+    node.paddingTop === node.paddingBottom &&
+    node.paddingTop === node.paddingLeft
+  ) {
+    if (node.paddingTop !== 0) classes.push(`p-[${node.paddingTop}px]`);
+  } else {
+    if (node.paddingTop === node.paddingBottom) {
+      if (node.paddingTop !== 0) classes.push(`py-[${node.paddingTop}px]`);
+    } else {
+      if (node.paddingTop !== 0) classes.push(`pt-[${node.paddingTop}px]`);
+      if (node.paddingRight !== 0) classes.push(`pr-[${node.paddingRight}px]`);
+    }
+
+    if (node.paddingLeft === node.paddingRight) {
+      if (node.paddingLeft !== 0) classes.push(`px-[${node.paddingLeft}px]`);
+    } else {
+      if (node.paddingBottom !== 0)
+        classes.push(`pb-[${node.paddingBottom}px]`);
+      if (node.paddingLeft !== 0) classes.push(`pl-[${node.paddingLeft}px]`);
+    }
+  }
 
   classes.push(
     (() => {
