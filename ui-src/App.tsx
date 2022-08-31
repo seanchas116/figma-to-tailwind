@@ -8,6 +8,8 @@ import "./main.css";
 import "prism-themes/themes/prism-material-dark.css";
 import { formatHTML } from "./format";
 import { toHtml } from "hast-util-to-html";
+import { startCase } from "lodash-es";
+import clsx from "clsx";
 
 function postMessageToPlugin(data: MessageToPlugin): void {
   parent.postMessage({ pluginMessage: data }, "*");
@@ -17,6 +19,7 @@ export const App: React.FC = () => {
   let htmlToCopyRef = useRef<string | undefined>();
   const [htmlOutput, setHTMLOutput] = useState("");
   const [contentSize, setContentSize] = useState({ width: 0, height: 0 });
+  const [tab, setTab] = useState<"code" | "preview">("code");
 
   useEffect(() => {
     const onDocumentCopy = (e: ClipboardEvent) => {
@@ -71,22 +74,38 @@ export const App: React.FC = () => {
 
   return (
     <div className="p-4 flex flex-col gap-4 h-screen w-screen">
-      <button
-        className="bg-blue-500 text-white leading-[40px] h-[40px] rounded w-full"
-        disabled={!htmlOutput}
-        onClick={onCopyButtonClick}
-      >
-        Copy
-      </button>
-      <div className="grid grid-cols-2 flex-1 min-h-0 gap-4">
-        <pre className="rounded overflow-y-scroll h-full bg-gray-800">
+      <div className="flex gap-1 -mx-1">
+        {(["code", "preview"] as const).map((_tab) => (
+          <button
+            key={_tab}
+            className={clsx("px-1 leading-4 text-sm", {
+              "text-gray-900": _tab === tab,
+              "text-gray-300": _tab !== tab,
+            })}
+            onClick={() => setTab(_tab)}
+          >
+            {startCase(_tab)}
+          </button>
+        ))}
+      </div>
+      <div className="flex-1 min-h-0 relative">
+        <pre
+          className={clsx(
+            "rounded overflow-y-scroll bg-gray-800",
+            "absolute top-0 left-0 right-0 bottom-0",
+            {
+              "opacity-0 pointer-events-none": tab !== "code",
+            }
+          )}
+          hidden={tab !== "code"}
+        >
           <code
             className="language-jsx"
             style={{
               display: "block",
               padding: "1rem",
               whiteSpace: "pre-wrap",
-              fontSize: "12px",
+              fontSize: "10px",
               background: "none",
               fontFamily:
                 "ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace",
@@ -96,10 +115,25 @@ export const App: React.FC = () => {
             }}
           />
         </pre>
-        <div className="rounded border border-gray-200 overflow-hidden">
+        <div
+          className={clsx(
+            "rounded border border-gray-200 overflow-hidden",
+            "absolute top-0 left-0 right-0 bottom-0",
+            {
+              "opacity-0 pointer-events-none": tab !== "preview",
+            }
+          )}
+        >
           <Preview htmlOutput={htmlOutput} contentSize={contentSize} />
         </div>
       </div>
+      <button
+        className="bg-blue-500 text-white text-sm leading-8 h-8 rounded w-full"
+        disabled={!htmlOutput}
+        onClick={onCopyButtonClick}
+      >
+        Copy
+      </button>
     </div>
   );
 };
