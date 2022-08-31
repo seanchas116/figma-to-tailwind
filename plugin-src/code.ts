@@ -4,7 +4,7 @@ import { toHtml } from "hast-util-to-html";
 import { IDGenerator } from "./util";
 import { MessageToPlugin, MessageToUI } from "../message";
 
-figma.showUI(__html__, { width: 600, height: 600 });
+figma.showUI(__html__, { width: 800, height: 600 });
 
 async function generateContent() {
   const idGenerator = new IDGenerator();

@@ -17,7 +17,11 @@ export const App: React.FC = () => {
   let htmlToCopyRef = useRef<string | undefined>();
   const [result, setResult] = useState("");
 
+  const iframeRef = React.createRef<HTMLIFrameElement>();
+
   useEffect(() => {
+    const iframe = iframeRef.current;
+
     const onDocumentCopy = (e: ClipboardEvent) => {
       if (htmlToCopyRef.current) {
         e.preventDefault();
@@ -29,6 +33,21 @@ export const App: React.FC = () => {
     const onWindowMessage = (e: MessageEvent) => {
       const msg: MessageToUI = e.data.pluginMessage;
       if (msg.type === "change") {
+        if (iframe) {
+          console.log("change srcdoc");
+          iframe.srcdoc = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta charset="utf-8">  
+            </head>
+            <body>
+              ${msg.data}
+            </body>
+            </html>
+          `;
+        }
+
         setResult(formatHTML(msg.data));
       }
     };
@@ -59,7 +78,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="p-4 flex flex-col gap-4">
+    <div className="p-4 flex flex-col gap-4 h-screen w-screen">
       <button
         className="bg-blue-500 text-white leading-[40px] h-[40px] rounded w-full"
         disabled={!result}
@@ -67,22 +86,28 @@ export const App: React.FC = () => {
       >
         Copy
       </button>
-      <pre>
-        <code
-          className="language-jsx"
-          style={{
-            display: "block",
-            padding: "1rem",
-            whiteSpace: "pre-wrap",
-            fontSize: "12px",
-            fontFamily:
-              "ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace",
-          }}
-          dangerouslySetInnerHTML={{
-            __html: Prism.highlight(result, Prism.languages.jsx, "jsx"),
-          }}
-        />
-      </pre>
+      <div className="grid grid-cols-2 flex-1 min-h-0">
+        <pre className="rounded overflow-y-scroll h-full bg-gray-800">
+          <code
+            className="language-jsx"
+            style={{
+              display: "block",
+              padding: "1rem",
+              whiteSpace: "pre-wrap",
+              fontSize: "12px",
+              background: "none",
+              fontFamily:
+                "ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace",
+            }}
+            dangerouslySetInnerHTML={{
+              __html: Prism.highlight(result, Prism.languages.jsx, "jsx"),
+            }}
+          />
+        </pre>
+        <div>
+          <iframe className="w-full h-full" ref={iframeRef} />
+        </div>
+      </div>
     </div>
   );
 };
