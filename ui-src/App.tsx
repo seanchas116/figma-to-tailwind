@@ -40,6 +40,7 @@ export const App: React.FC = () => {
             <html>
             <head>
               <meta charset="utf-8">  
+              <script src="https://cdn.tailwindcss.com"></script>
             </head>
             <body>
               ${msg.data}
