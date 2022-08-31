@@ -229,7 +229,7 @@ export function borderStyle(node: BaseFrameMixin | RectangleNode): string[] {
   return classes;
 }
 
-export function fillBorderStyle(node: BaseFrameMixin): string[] {
+export function fillStyle(node: BaseFrameMixin): string[] {
   const classes: string[] = [];
 
   // TODO: support multiple fills
@@ -242,7 +242,6 @@ export function fillBorderStyle(node: BaseFrameMixin): string[] {
     classes.push(`bg-[${background}]`);
   }
 
-  classes.push(...borderStyle(node));
   return classes;
 }
 

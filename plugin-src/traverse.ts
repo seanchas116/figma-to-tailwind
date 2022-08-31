@@ -12,7 +12,7 @@ import {
 import {
   positionStyle,
   effectStyle,
-  fillBorderStyle,
+  fillStyle,
   textStyle,
   layoutStyle,
   borderStyle,
@@ -107,7 +107,8 @@ export async function figmaToMacaron(
         "div",
         {
           className: twMerge(
-            fillBorderStyle(node),
+            fillStyle(node),
+            borderStyle(node),
             layoutStyle(node),
             positionStyle(node, parentLayout, groupTopLeft),
             effectStyle(node)
