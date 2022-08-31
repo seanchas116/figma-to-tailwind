@@ -148,6 +148,8 @@ export function layoutStyle(node: BaseFrameMixin): string[] {
 export function fillBorderStyle(node: BaseFrameMixin): string[] {
   // TODO: A rectangle with single image fill should be treated as <img> rather than <div> with a background image
 
+  const classes: string[] = [];
+
   // TODO: support multiple fills
   const fill =
     node.fills !== figma.mixed && node.fills.length ? node.fills[0] : undefined;
@@ -155,35 +157,64 @@ export function fillBorderStyle(node: BaseFrameMixin): string[] {
 
   // TODO: support gradient and image
   const background = fill?.type === "SOLID" ? solidPaintToHex(fill) : undefined;
+  if (background) {
+    classes.push(`bg-[${background}]`);
+  }
 
   const borderColor =
     stroke?.type === "SOLID" ? solidPaintToHex(stroke) : undefined;
   const borderStyle = borderColor ? "solid" : undefined;
 
-  return compact([
-    `bg-[${background}]`,
-    ...(borderStyle === "solid"
-      ? [
-          `border-t-[${node.strokeTopWeight}px]`,
-          `border-r-[${node.strokeRightWeight}px]`,
-          `border-b-[${node.strokeBottomWeight}px]`,
-          `border-l-[${node.strokeLeftWeight}px]`,
-          `border-[${borderColor}]`,
-        ]
-      : []),
-    node.topLeftRadius !== 0
-      ? `rounded-tl-[${node.topLeftRadius}px]`
-      : undefined,
-    node.topRightRadius !== 0
-      ? `rounded-tr-[${node.topRightRadius}px]`
-      : undefined,
-    node.bottomRightRadius !== 0
-      ? `rounded-br-[${node.bottomRightRadius}px]`
-      : undefined,
-    node.bottomLeftRadius !== 0
-      ? `rounded-bl-[${node.bottomLeftRadius}px]`
-      : undefined,
-  ]);
+  if (borderStyle === "solid") {
+    if (
+      node.strokeTopWeight === node.strokeBottomWeight &&
+      node.strokeTopWeight === node.strokeLeftWeight &&
+      node.strokeTopWeight === node.strokeRightWeight
+    ) {
+      if (node.strokeTopWeight !== 0) {
+        classes.push(`border-[${node.strokeTopWeight}px]`);
+      }
+    } else {
+      if (node.strokeTopWeight !== 0) {
+        classes.push(`border-t-[${node.strokeTopWeight}px]`);
+      }
+      if (node.strokeBottomWeight !== 0) {
+        classes.push(`border-b-[${node.strokeBottomWeight}px]`);
+      }
+      if (node.strokeLeftWeight !== 0) {
+        classes.push(`border-l-[${node.strokeLeftWeight}px]`);
+      }
+      if (node.strokeRightWeight !== 0) {
+        classes.push(`border-r-[${node.strokeRightWeight}px]`);
+      }
+    }
+    classes.push(`border-[${borderColor}]`);
+  }
+
+  if (
+    node.topLeftRadius === node.topRightRadius &&
+    node.topLeftRadius === node.bottomLeftRadius &&
+    node.topLeftRadius === node.bottomRightRadius
+  ) {
+    if (node.topLeftRadius !== 0) {
+      classes.push(`rounded-[${node.topLeftRadius}px]`);
+    }
+  } else {
+    if (node.topLeftRadius !== 0) {
+      classes.push(`rounded-t-[${node.topLeftRadius}px]`);
+    }
+    if (node.topRightRadius !== 0) {
+      classes.push(`rounded-r-[${node.topRightRadius}px]`);
+    }
+    if (node.bottomLeftRadius !== 0) {
+      classes.push(`rounded-b-[${node.bottomLeftRadius}px]`);
+    }
+    if (node.bottomRightRadius !== 0) {
+      classes.push(`rounded-br-[${node.bottomRightRadius}px]`);
+    }
+  }
+
+  return classes;
 }
 
 function textAlign(align: TextNode["textAlignHorizontal"]): string {
