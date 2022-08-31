@@ -128,7 +128,7 @@ export const App: React.FC = () => {
         </div>
       </div>
       <button
-        className="bg-blue-500 text-white text-sm leading-8 h-8 rounded w-full"
+        className="bg-blue-500 text-white text-sm leading-10 h-10 rounded w-full"
         disabled={!htmlOutput}
         onClick={onCopyButtonClick}
       >

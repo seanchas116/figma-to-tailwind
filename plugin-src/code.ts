@@ -2,7 +2,7 @@ import { figmaToMacaron } from "./traverse";
 import { compact } from "lodash-es";
 import { MessageToPlugin, MessageToUI } from "../message";
 
-figma.showUI(__html__, { width: 800, height: 600 });
+figma.showUI(__html__, { width: 640, height: 480 });
 
 async function generateContent() {
   const selection = figma.currentPage.selection;
