@@ -16,7 +16,7 @@ function postMessageToPlugin(data: MessageToPlugin): void {
 
 export const App: React.FC = () => {
   let htmlToCopyRef = useRef<string | undefined>();
-  const [result, setResult] = useState("");
+  const [htmlOutput, setHTMLOutput] = useState("");
 
   const iframeRef = React.createRef<HTMLIFrameElement>();
 
@@ -54,7 +54,7 @@ export const App: React.FC = () => {
           `;
         }
 
-        setResult(formatHTML(html));
+        setHTMLOutput(formatHTML(html));
       }
     };
 
@@ -72,7 +72,7 @@ export const App: React.FC = () => {
   }, []);
 
   const onCopyButtonClick = () => {
-    const base64 = Buffer.from(result).toString("base64");
+    const base64 = Buffer.from(htmlOutput).toString("base64");
     const encoded = `<span data-macaron="${base64}"></span>`;
     htmlToCopyRef.current = encoded;
     document.execCommand("copy");
@@ -87,7 +87,7 @@ export const App: React.FC = () => {
     <div className="p-4 flex flex-col gap-4 h-screen w-screen">
       <button
         className="bg-blue-500 text-white leading-[40px] h-[40px] rounded w-full"
-        disabled={!result}
+        disabled={!htmlOutput}
         onClick={onCopyButtonClick}
       >
         Copy
@@ -106,7 +106,7 @@ export const App: React.FC = () => {
                 "ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace",
             }}
             dangerouslySetInnerHTML={{
-              __html: Prism.highlight(result, Prism.languages.jsx, "jsx"),
+              __html: Prism.highlight(htmlOutput, Prism.languages.jsx, "jsx"),
             }}
           />
         </pre>
