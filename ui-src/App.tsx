@@ -92,7 +92,7 @@ export const App: React.FC = () => {
       >
         Copy
       </button>
-      <div className="grid grid-cols-2 flex-1 min-h-0">
+      <div className="grid grid-cols-2 flex-1 min-h-0 gap-4">
         <pre className="rounded overflow-y-scroll h-full bg-gray-800">
           <code
             className="language-jsx"
@@ -110,7 +110,7 @@ export const App: React.FC = () => {
             }}
           />
         </pre>
-        <div>
+        <div className="rounded border border-gray-200 overflow-hidden">
           <iframe className="w-full h-full" ref={iframeRef} />
         </div>
       </div>
