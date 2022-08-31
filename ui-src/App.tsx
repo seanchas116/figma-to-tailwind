@@ -32,7 +32,7 @@ export const App: React.FC = () => {
 
       if (msg.type === "change") {
         const root = msg.data;
-        const html = toHtml(root);
+        const html = toHtml(root).replaceAll("&#x27;", "'");
 
         let width = 0;
         let height = 0;
