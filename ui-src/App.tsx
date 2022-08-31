@@ -139,7 +139,13 @@ const Preview: React.FC<{
   `;
 
   return (
-    <div ref={ref} className="w-full h-full">
+    <div
+      ref={ref}
+      className="w-full h-full"
+      style={{
+        background: `repeating-conic-gradient(#eee 0% 25%, transparent 0% 50%) 50% / 20px 20px`,
+      }}
+    >
       <iframe
         style={{
           width: `${contentSize.width}px`,
