@@ -8,6 +8,7 @@ import "prismjs/components/prism-jsx";
 import "./main.css";
 import "prism-themes/themes/prism-material-dark.css";
 import { formatHTML, formatJS } from "./format";
+import { toHtml } from "hast-util-to-html";
 
 function postMessageToPlugin(data: MessageToPlugin): void {
   parent.postMessage({ pluginMessage: data }, "*");
@@ -32,7 +33,11 @@ export const App: React.FC = () => {
 
     const onWindowMessage = (e: MessageEvent) => {
       const msg: MessageToUI = e.data.pluginMessage;
+
       if (msg.type === "change") {
+        const root = msg.data;
+        const html = toHtml(root);
+
         if (iframe) {
           console.log("change srcdoc");
           iframe.srcdoc = `
@@ -43,13 +48,13 @@ export const App: React.FC = () => {
               <script src="https://cdn.tailwindcss.com"></script>
             </head>
             <body>
-              ${msg.data}
+              ${html}
             </body>
             </html>
           `;
         }
 
-        setResult(formatHTML(msg.data));
+        setResult(formatHTML(html));
       }
     };
 

@@ -1,6 +1,5 @@
 import { figmaToMacaron } from "./traverse";
 import { compact } from "lodash-es";
-import { toHtml } from "hast-util-to-html";
 import { IDGenerator } from "./util";
 import { MessageToPlugin, MessageToUI } from "../message";
 
@@ -17,11 +16,12 @@ async function generateContent() {
     )
   );
 
-  const html = toHtml(macaronLayers);
-
   const messageToUI: MessageToUI = {
     type: "change",
-    data: html,
+    data: {
+      type: "root",
+      children: macaronLayers,
+    },
   };
   figma.ui.postMessage(messageToUI);
 }

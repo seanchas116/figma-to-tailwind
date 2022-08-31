@@ -1,3 +1,5 @@
+import type * as hast from "hast";
+
 export type MessageToPlugin =
   | {
       type: "ready";
@@ -9,5 +11,5 @@ export type MessageToPlugin =
 
 export type MessageToUI = {
   type: "change";
-  data: string;
+  data: hast.Root;
 };
