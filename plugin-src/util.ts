@@ -133,3 +133,11 @@ export class IDGenerator {
     return id;
   }
 }
+
+export function kebabCase(str: string): string {
+  return str.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
+}
+
+export function compact<T>(arr: (T | null | undefined)[]): T[] {
+  return arr.filter(Boolean) as T[];
+}

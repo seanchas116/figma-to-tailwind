@@ -1,48 +1,46 @@
 import type * as CSS from "csstype";
-import { rgbaToHex, solidPaintToHex } from "./util";
-
-export type Style = Partial<Record<keyof CSS.Properties, string>>;
+import { compact, rgbaToHex, solidPaintToHex } from "./util";
 
 export function positionStyle(
   node: SceneNode,
   parentLayout: BaseFrameMixin["layoutMode"] | undefined,
   groupTopLeft: { x: number; y: number } = { x: 0, y: 0 }
-): Style {
-  const style: Style = {};
+): string[] {
+  const classes: string[] = [];
 
   // TODO: more constraints
   if (
     parentLayout === "NONE" ||
     ("layoutPositioning" in node && node.layoutPositioning === "ABSOLUTE")
   ) {
-    style.position = "absolute";
-    style.left = `${node.x - groupTopLeft.x}px`;
-    style.top = `${node.y - groupTopLeft.y}px`;
+    classes.push("absolute");
+    classes.push(`left-[${node.x - groupTopLeft.x}px]`);
+    classes.push(`top-[${node.y - groupTopLeft.y}px]`);
   } else {
-    style.position = "relative";
+    classes.push("relative");
   }
 
-  style.width = `${node.width}px`;
-  style.height = `${node.height}px`;
+  let widthClass: string | undefined = `w-[${node.width}px]`;
+  let heightClass: string | undefined = `h-[${node.height}px]`;
 
   if ("layoutGrow" in node) {
     if (parentLayout === "VERTICAL") {
       if (node.layoutGrow) {
-        style.flexGrow = "1";
-        style.height = undefined;
+        classes.push("flex-1");
+        heightClass = undefined;
       }
       if (node.layoutAlign === "STRETCH") {
-        style.alignSelf = "stretch";
-        style.width = undefined;
+        classes.push("self-stretch");
+        widthClass = undefined;
       }
     } else if (parentLayout === "HORIZONTAL") {
       if (node.layoutGrow) {
-        style.flexGrow = "1";
-        style.width = undefined;
+        classes.push("flex-1");
+        widthClass = undefined;
       }
       if (node.layoutAlign === "STRETCH") {
-        style.alignSelf = "stretch";
-        style.height = undefined;
+        classes.push("self-stretch");
+        heightClass = undefined;
       }
     }
   }
@@ -50,84 +48,104 @@ export function positionStyle(
   if (node.type === "TEXT") {
     switch (node.textAutoResize) {
       case "WIDTH_AND_HEIGHT":
-        style.width = undefined;
-        style.height = undefined;
+        widthClass = undefined;
+        heightClass = undefined;
         break;
       case "HEIGHT":
-        style.height = undefined;
+        heightClass = undefined;
         break;
       case "NONE":
         break;
     }
   }
 
-  return style;
-}
-
-export function layoutStyle(node: BaseFrameMixin): Style {
-  const style: Style = {};
-
-  if (node.layoutMode === "NONE") {
-    return {};
+  if (widthClass) {
+    classes.push(widthClass);
+  }
+  if (heightClass) {
+    classes.push(heightClass);
   }
 
-  style.display = "flex";
-  style.flexDirection = node.layoutMode === "VERTICAL" ? "column" : "row";
-  style.columnGap = style.rowGap = node.itemSpacing + "px";
-  style.paddingLeft = Math.max(0, node.paddingLeft - node.strokeWeight) + "px";
-  style.paddingRight =
-    Math.max(0, node.paddingRight - node.strokeWeight) + "px";
-  style.paddingTop = Math.max(0, node.paddingTop - node.strokeWeight) + "px";
-  style.paddingBottom =
-    Math.max(0, node.paddingBottom - node.strokeWeight) + "px";
+  return classes;
+}
 
-  style.justifyContent = (() => {
-    switch (node.primaryAxisAlignItems) {
-      case "CENTER":
-        return "center";
-      case "MAX":
-        return "flex-end";
-      case "MIN":
-        return "flex-start";
-      case "SPACE_BETWEEN":
-        return "space-between";
-    }
-  })();
-  style.alignItems = (() => {
-    switch (node.counterAxisAlignItems) {
-      case "CENTER":
-        return "center";
-      case "MAX":
-        return "flex-end";
-      case "MIN":
-        return "flex-start";
-    }
-  })();
+export function layoutStyle(node: BaseFrameMixin): string[] {
+  const classes: string[] = [];
+
+  if (node.layoutMode === "NONE") {
+    return [];
+  }
+
+  classes.push("flex");
+  if (node.layoutMode === "VERTICAL") {
+    classes.push("flex-col");
+  }
+  classes.push(`gap-[${node.itemSpacing}px]`);
+  // style.paddingLeft = Math.max(0, node.paddingLeft - node.strokeWeight) + "px";
+  // style.paddingRight =
+  //   Math.max(0, node.paddingRight - node.strokeWeight) + "px";
+  // style.paddingTop = Math.max(0, node.paddingTop - node.strokeWeight) + "px";
+  // style.paddingBottom =
+  //   Math.max(0, node.paddingBottom - node.strokeWeight) + "px";
+  // TODO: offset border?
+  classes.push(`pl-[${node.paddingLeft}px]`);
+  classes.push(`pr-[${node.paddingRight}px]`);
+  classes.push(`pt-[${node.paddingTop}px]`);
+  classes.push(`pb-[${node.paddingBottom}px]`);
+
+  classes.push(
+    (() => {
+      switch (node.primaryAxisAlignItems) {
+        case "CENTER":
+          return "justify-center";
+        case "MAX":
+          return "justify-end";
+        case "MIN":
+          return "justify-start";
+        case "SPACE_BETWEEN":
+          return "justify-between";
+      }
+    })()
+  );
+  classes.push(
+    (() => {
+      switch (node.counterAxisAlignItems) {
+        case "CENTER":
+          return "items-center";
+        case "MAX":
+          return "items-end";
+        case "MIN":
+          return "items-start";
+        case "BASELINE":
+          return "items-baseline";
+      }
+    })()
+  );
 
   if (node.layoutMode === "VERTICAL") {
     if (node.primaryAxisSizingMode == "AUTO") {
-      style.height = "fit-content";
+      classes.push(`h-fit`);
     }
     if (node.counterAxisSizingMode == "AUTO") {
-      style.width = "fit-content";
+      classes.push(`w-fit`);
     }
   } else {
     if (node.primaryAxisSizingMode == "AUTO") {
-      style.width = "fit-content";
+      classes.push(`w-fit`);
     }
     if (node.counterAxisSizingMode == "AUTO") {
-      style.height = "fit-content";
+      classes.push(`h-fit`);
     }
   }
 
   if (node.clipsContent) {
-    style.overflow = "hidden";
+    classes.push("overflow-hidden");
   }
 
-  return style;
+  return classes;
 }
 
-export function fillBorderStyle(node: BaseFrameMixin): Style {
+export function fillBorderStyle(node: BaseFrameMixin): string[] {
   // TODO: A rectangle with single image fill should be treated as <img> rather than <div> with a background image
 
   // TODO: support multiple fills
@@ -142,33 +160,30 @@ export function fillBorderStyle(node: BaseFrameMixin): Style {
     stroke?.type === "SOLID" ? solidPaintToHex(stroke) : undefined;
   const borderStyle = borderColor ? "solid" : undefined;
 
-  return {
-    background,
+  return compact([
+    `bg-[${background}]`,
     ...(borderStyle === "solid"
-      ? {
-          borderTopStyle: borderStyle,
-          borderRightStyle: borderStyle,
-          borderBottomStyle: borderStyle,
-          borderLeftStyle: borderStyle,
-          borderTopWidth: `${node.strokeTopWeight}px`,
-          borderRightWidth: `${node.strokeRightWeight}px`,
-          borderBottomWidth: `${node.strokeBottomWeight}px`,
-          borderLeftWidth: `${node.strokeLeftWeight}px`,
-          borderTopColor: borderColor,
-          borderRightColor: borderColor,
-          borderBottomColor: borderColor,
-          borderLeftColor: borderColor,
-        }
-      : {}),
-    borderTopLeftRadius:
-      node.topLeftRadius !== 0 ? `${node.topLeftRadius}px` : undefined,
-    borderTopRightRadius:
-      node.topRightRadius !== 0 ? `${node.topRightRadius}px` : undefined,
-    borderBottomLeftRadius:
-      node.bottomLeftRadius !== 0 ? `${node.bottomLeftRadius}px` : undefined,
-    borderBottomRightRadius:
-      node.bottomRightRadius !== 0 ? `${node.bottomRightRadius}px` : undefined,
-  };
+      ? [
+          `border-t-[${node.strokeTopWeight}px]`,
+          `border-r-[${node.strokeRightWeight}px]`,
+          `border-b-[${node.strokeBottomWeight}px]`,
+          `border-l-[${node.strokeLeftWeight}px]`,
+          `border-[${borderColor}]`,
+        ]
+      : []),
+    node.topLeftRadius !== 0
+      ? `rounded-tl-[${node.topLeftRadius}px]`
+      : undefined,
+    node.topRightRadius !== 0
+      ? `rounded-tr-[${node.topRightRadius}px]`
+      : undefined,
+    node.bottomRightRadius !== 0
+      ? `rounded-br-[${node.bottomRightRadius}px]`
+      : undefined,
+    node.bottomLeftRadius !== 0
+      ? `rounded-bl-[${node.bottomLeftRadius}px]`
+      : undefined,
+  ]);
 }
 
 function textAlign(align: TextNode["textAlignHorizontal"]): string {
@@ -196,7 +211,7 @@ const fontWeightForName: Record<string, number> = {
   black: 900,
 };
 
-function fontNameStyle(font: FontName): Style {
+function fontNameStyle(font: FontName): string[] {
   const fontFamily = font.family;
 
   const style = font.style.toLowerCase();
@@ -205,69 +220,60 @@ function fontNameStyle(font: FontName): Style {
   const fontWeight = fontWeightForName[styleWithoutItalic] ?? 400;
   const italic = style.includes("italic");
 
-  return {
-    fontFamily,
-    fontWeight: fontWeight.toString(),
-    fontStyle: italic ? "italic" : undefined,
-  };
+  return compact([
+    `font-['${fontFamily.replace(/\s+/g, "_")}']`,
+    `font-[${fontWeight}]`,
+    italic ? "italic" : undefined,
+  ]);
 }
 
-export function textStyle(node: TextNode): Style {
+export function textStyle(node: TextNode): string[] {
   // TODO: split into spans when font styles are mixed
   const fontSize = node.getRangeFontSize(0, 1);
   const fontName = node.getRangeFontName(0, 1);
 
-  const style: Style = {};
-  style.textAlign = textAlign(node.textAlignHorizontal);
+  const classes: string[] = [];
+
+  classes.push(`text-${textAlign(node.textAlignHorizontal)}`);
 
   if (fontSize !== figma.mixed) {
-    style.fontSize = `${fontSize}px`;
+    classes.push(`text-[${fontSize}px]`);
   }
   if (fontName !== figma.mixed) {
-    Object.assign(style, fontNameStyle(fontName));
+    classes.push(...fontNameStyle(fontName));
   }
 
   const fills = node.fills;
   if (fills !== figma.mixed && fills.length && fills[0].type === "SOLID") {
-    style.color = rgbaToHex({ ...fills[0].color, a: fills[0].opacity ?? 1 });
+    const textColor = rgbaToHex({
+      ...fills[0].color,
+      a: fills[0].opacity ?? 1,
+    });
+    classes.push(`text-[${textColor}]`);
   }
 
   if (node.lineHeight !== figma.mixed && node.lineHeight.unit !== "AUTO") {
     if (node.lineHeight.unit === "PERCENT") {
-      style.lineHeight = `${node.lineHeight.value / 100}`;
+      classes.push(`leading-[${node.lineHeight.value / 100}]`);
     } else {
-      style.lineHeight = `${node.lineHeight.value}px`;
+      classes.push(`leading-[${node.lineHeight.value}px]`);
     }
   }
 
   const { letterSpacing } = node;
   if (letterSpacing !== figma.mixed && letterSpacing.value !== 0) {
     if (letterSpacing.unit === "PERCENT") {
-      style.letterSpacing = `${letterSpacing.value / 100}em`;
+      classes.push(`tracking-[${letterSpacing.value / 100}em]`);
     } else if (letterSpacing.unit === "PIXELS") {
-      style.letterSpacing = `${letterSpacing.value}px`;
+      classes.push(`tracking-[${letterSpacing.value}px]`);
     }
   }
 
-  return style;
+  return classes;
 }
 
-export function effectStyle(node: BlendMixin): Style {
-  return {
-    opacity: node.opacity !== 1 ? node.opacity.toString() : undefined,
-  };
-}
-
-export function stringifyStyle(style: Style): string {
-  const styleString = Object.entries(style)
-    .map(([key, value]) =>
-      value != null ? `${kebabCase(key)}: ${value};` : ""
-    )
-    .join("");
-
-  return styleString;
-}
-
-function kebabCase(str: string): string {
-  return str.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
+export function effectStyle(node: BlendMixin): string[] {
+  return compact([
+    node.opacity !== 1 ? `opacity-[${node.opacity}]` : undefined,
+  ]);
 }

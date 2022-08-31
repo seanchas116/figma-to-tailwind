@@ -10,13 +10,13 @@ import {
   IDGenerator,
 } from "./util";
 import {
-  stringifyStyle,
   positionStyle,
   effectStyle,
   fillBorderStyle,
   textStyle,
   layoutStyle,
 } from "./style";
+import { twMerge } from "tailwind-merge";
 
 export async function figmaToMacaron(
   idGenerator: IDGenerator,
@@ -54,10 +54,10 @@ export async function figmaToMacaron(
       return h("img", {
         id,
         src: dataURL,
-        style: stringifyStyle({
-          ...positionStyle(node, parentLayout, groupTopLeft),
-          ...effectStyle(node),
-        }),
+        className: twMerge(
+          positionStyle(node, parentLayout, groupTopLeft),
+          effectStyle(node)
+        ),
       });
     }
   }
@@ -78,10 +78,10 @@ export async function figmaToMacaron(
         properties: {
           ...svgElem.properties,
           id,
-          style: stringifyStyle({
-            ...positionStyle(node, parentLayout, groupTopLeft),
-            ...effectStyle(node as BlendMixin),
-          }),
+          className: twMerge(
+            positionStyle(node, parentLayout, groupTopLeft),
+            effectStyle(node as BlendMixin)
+          ),
         },
       };
     } catch (error) {
@@ -96,11 +96,11 @@ export async function figmaToMacaron(
         "div",
         {
           id,
-          style: stringifyStyle({
-            ...positionStyle(node, parentLayout, groupTopLeft),
-            ...textStyle(node),
-            ...effectStyle(node),
-          }),
+          className: twMerge(
+            positionStyle(node, parentLayout, groupTopLeft),
+            textStyle(node),
+            effectStyle(node)
+          ),
         },
         ...processCharacters(node.characters)
       );
@@ -113,12 +113,12 @@ export async function figmaToMacaron(
         "div",
         {
           id,
-          style: stringifyStyle({
-            ...fillBorderStyle(node),
-            ...layoutStyle(node),
-            ...positionStyle(node, parentLayout, groupTopLeft),
-            ...effectStyle(node),
-          }),
+          className: twMerge(
+            fillBorderStyle(node),
+            layoutStyle(node),
+            positionStyle(node, parentLayout, groupTopLeft),
+            effectStyle(node)
+          ),
         },
         ...compact(
           await Promise.all(
@@ -144,9 +144,7 @@ export async function figmaToMacaron(
         "div",
         {
           id,
-          style: stringifyStyle({
-            ...positionStyle(node, parentLayout, groupTopLeft),
-          }),
+          className: twMerge(positionStyle(node, parentLayout, groupTopLeft)),
         },
         ...compact(
           await Promise.all(
