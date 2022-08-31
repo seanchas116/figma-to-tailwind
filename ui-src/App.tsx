@@ -1,6 +1,6 @@
 import { MessageToPlugin, MessageToUI } from "../message";
 import { Buffer } from "buffer";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import React from "react";
 import Prism from "prismjs";
 import "prismjs/components/prism-jsx";
@@ -110,7 +110,18 @@ const Preview: React.FC<{
   htmlOutput: string;
   contentSize: { width: number; height: number };
 }> = ({ htmlOutput, contentSize }) => {
-  const iframeRef = React.createRef<HTMLIFrameElement>();
+  const ref = React.createRef<HTMLDivElement>();
+
+  const [viewSize, setViewSize] = useState({ width: 0, height: 0 });
+
+  useLayoutEffect(() => {
+    if (ref.current) {
+      setViewSize({
+        width: ref.current.clientWidth,
+        height: ref.current.clientHeight,
+      });
+    }
+  }, []);
 
   console.log(contentSize);
 
@@ -127,5 +138,19 @@ const Preview: React.FC<{
     </html>
   `;
 
-  return <iframe className="w-full h-full" ref={iframeRef} srcDoc={srcdoc} />;
+  return (
+    <div ref={ref} className="w-full h-full">
+      <iframe
+        style={{
+          width: `${contentSize.width}px`,
+          height: `${contentSize.height}px`,
+          transformOrigin: "top left",
+          transform: ` translateY(${viewSize.height / 2}px) scale(${
+            viewSize.width / contentSize.width
+          }) translateY(-${contentSize.height / 2}px)`,
+        }}
+        srcDoc={srcdoc}
+      />
+    </div>
+  );
 };
