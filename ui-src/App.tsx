@@ -170,6 +170,11 @@ const Preview: React.FC<{
     </html>
   `;
 
+  const scale = Math.min(
+    viewSize.width / contentSize.width,
+    viewSize.height / contentSize.height
+  );
+
   return (
     <div
       ref={ref}
@@ -183,9 +188,12 @@ const Preview: React.FC<{
           width: `${contentSize.width}px`,
           height: `${contentSize.height}px`,
           transformOrigin: "top left",
-          transform: ` translateY(${viewSize.height / 2}px) scale(${
-            viewSize.width / contentSize.width
-          }) translateY(-${contentSize.height / 2}px)`,
+          transform: `
+            translate(${viewSize.width / 2}px, ${viewSize.height / 2}px)
+            scale(${scale})
+            translate(-${contentSize.width / 2}px, -${
+            contentSize.height / 2
+          }px)`,
         }}
         srcDoc={srcdoc}
       />
