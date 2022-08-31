@@ -166,21 +166,12 @@ export function layoutStyle(node: BaseFrameMixin): string[] {
   return classes;
 }
 
-export function fillBorderStyle(node: BaseFrameMixin): string[] {
+export function borderStyle(node: BaseFrameMixin | RectangleNode): string[] {
   // TODO: A rectangle with single image fill should be treated as <img> rather than <div> with a background image
 
   const classes: string[] = [];
 
-  // TODO: support multiple fills
-  const fill =
-    node.fills !== figma.mixed && node.fills.length ? node.fills[0] : undefined;
   const stroke = node.strokes.length ? node.strokes[0] : undefined;
-
-  // TODO: support gradient and image
-  const background = fill?.type === "SOLID" ? solidPaintToHex(fill) : undefined;
-  if (background) {
-    classes.push(`bg-[${background}]`);
-  }
 
   const borderColor =
     stroke?.type === "SOLID" ? solidPaintToHex(stroke) : undefined;
@@ -235,6 +226,23 @@ export function fillBorderStyle(node: BaseFrameMixin): string[] {
     }
   }
 
+  return classes;
+}
+
+export function fillBorderStyle(node: BaseFrameMixin): string[] {
+  const classes: string[] = [];
+
+  // TODO: support multiple fills
+  const fill =
+    node.fills !== figma.mixed && node.fills.length ? node.fills[0] : undefined;
+
+  // TODO: support gradient and image
+  const background = fill?.type === "SOLID" ? solidPaintToHex(fill) : undefined;
+  if (background) {
+    classes.push(`bg-[${background}]`);
+  }
+
+  classes.push(...borderStyle(node));
   return classes;
 }
 

@@ -15,6 +15,7 @@ import {
   fillBorderStyle,
   textStyle,
   layoutStyle,
+  borderStyle,
 } from "./style";
 import { twMerge } from "tailwind-merge";
 
@@ -50,6 +51,7 @@ export async function figmaToMacaron(
         src: dataURL,
         className: twMerge(
           positionStyle(node, parentLayout, groupTopLeft),
+          borderStyle(node),
           effectStyle(node)
         ),
       });
