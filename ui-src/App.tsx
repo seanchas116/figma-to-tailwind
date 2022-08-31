@@ -71,6 +71,8 @@ export const App: React.FC = () => {
         <code
           className="language-jsx"
           style={{
+            display: "block",
+            padding: "1rem",
             whiteSpace: "pre-wrap",
             fontSize: "12px",
             fontFamily:
