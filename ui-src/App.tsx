@@ -3,11 +3,10 @@ import { Buffer } from "buffer";
 import { useEffect, useRef, useState } from "react";
 import React from "react";
 import Prism from "prismjs";
-
 import "prismjs/components/prism-jsx";
 import "./main.css";
 import "prism-themes/themes/prism-material-dark.css";
-import { formatHTML, formatJS } from "./format";
+import { formatHTML } from "./format";
 import { toHtml } from "hast-util-to-html";
 
 function postMessageToPlugin(data: MessageToPlugin): void {
@@ -37,23 +36,6 @@ export const App: React.FC = () => {
       if (msg.type === "change") {
         const root = msg.data;
         const html = toHtml(root);
-
-        console.log(msg.sizes);
-
-        if (iframe) {
-          iframe.srcdoc = `
-            <!DOCTYPE html>
-            <html>
-            <head>
-              <meta charset="utf-8">  
-              <script src="https://cdn.tailwindcss.com"></script>
-            </head>
-            <body>
-              ${html}
-            </body>
-            </html>
-          `;
-        }
 
         setHTMLOutput(formatHTML(html));
       }
@@ -112,9 +94,30 @@ export const App: React.FC = () => {
           />
         </pre>
         <div className="rounded border border-gray-200 overflow-hidden">
-          <iframe className="w-full h-full" ref={iframeRef} />
+          <Preview htmlOutput={htmlOutput} />
         </div>
       </div>
     </div>
   );
+};
+
+const Preview: React.FC<{
+  htmlOutput: string;
+}> = ({ htmlOutput }) => {
+  const iframeRef = React.createRef<HTMLIFrameElement>();
+
+  const srcdoc = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body>
+      ${htmlOutput}
+    </body>
+    </html>
+  `;
+
+  return <iframe className="w-full h-full" ref={iframeRef} srcDoc={srcdoc} />;
 };
