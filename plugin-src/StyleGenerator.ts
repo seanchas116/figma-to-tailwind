@@ -8,6 +8,23 @@ console.log(defaultTheme);
 export class StyleGenerator {
   readonly theme = defaultTheme;
 
+  constructor() {
+    for (const [keyword, value] of Object.entries(this.theme.spacing ?? {})) {
+      this.spacingKeywords.set(value, keyword);
+    }
+  }
+
+  private spacingKeywords = new Map<string, string>();
+
+  private spacing(value: number): string {
+    const rem = value / 16;
+    const keyword = this.spacingKeywords.get(`${rem}rem`);
+    if (keyword) {
+      return keyword;
+    }
+    return `[${rem}rem]`;
+  }
+
   position(
     node: SceneNode,
     parentLayout: BaseFrameMixin["layoutMode"] | undefined,
@@ -21,14 +38,14 @@ export class StyleGenerator {
       ("layoutPositioning" in node && node.layoutPositioning === "ABSOLUTE")
     ) {
       classes.push("absolute");
-      classes.push(`left-[${node.x - groupTopLeft.x}px]`);
-      classes.push(`top-[${node.y - groupTopLeft.y}px]`);
+      classes.push(`left-${this.spacing(node.x - groupTopLeft.x)}`);
+      classes.push(`top-${this.spacing(node.y - groupTopLeft.y)}`);
     } else {
       classes.push("relative");
     }
 
-    let widthClass: string | undefined = `w-[${node.width}px]`;
-    let heightClass: string | undefined = `h-[${node.height}px]`;
+    let widthClass: string | undefined = `w-${this.spacing(node.width)}`;
+    let heightClass: string | undefined = `h-${this.spacing(node.height)}`;
 
     if ("layoutGrow" in node) {
       if (parentLayout === "VERTICAL") {
@@ -89,7 +106,7 @@ export class StyleGenerator {
     }
 
     if (node.itemSpacing) {
-      classes.push(`gap-[${node.itemSpacing}px]`);
+      classes.push(`gap-${this.spacing(node.itemSpacing)}`);
     }
     // style.paddingLeft = Math.max(0, node.paddingLeft - node.strokeWeight) + "px";
     // style.paddingRight =
@@ -104,20 +121,26 @@ export class StyleGenerator {
       node.paddingTop === node.paddingBottom &&
       node.paddingTop === node.paddingLeft
     ) {
-      if (node.paddingTop) classes.push(`p-[${node.paddingTop}px]`);
+      if (node.paddingTop) classes.push(`p-${this.spacing(node.paddingTop)}`);
     } else {
       if (node.paddingTop === node.paddingBottom) {
-        if (node.paddingTop) classes.push(`py-[${node.paddingTop}px]`);
+        if (node.paddingTop)
+          classes.push(`py-${this.spacing(node.paddingTop)}`);
       } else {
-        if (node.paddingTop) classes.push(`pt-[${node.paddingTop}px]`);
-        if (node.paddingRight) classes.push(`pr-[${node.paddingRight}px]`);
+        if (node.paddingTop)
+          classes.push(`pt-${this.spacing(node.paddingTop)}`);
+        if (node.paddingRight)
+          classes.push(`pr-${this.spacing(node.paddingRight)}`);
       }
 
       if (node.paddingLeft === node.paddingRight) {
-        if (node.paddingLeft) classes.push(`px-[${node.paddingLeft}px]`);
+        if (node.paddingLeft)
+          classes.push(`px-${this.spacing(node.paddingLeft)}`);
       } else {
-        if (node.paddingBottom) classes.push(`pb-[${node.paddingBottom}px]`);
-        if (node.paddingLeft) classes.push(`pl-[${node.paddingLeft}px]`);
+        if (node.paddingBottom)
+          classes.push(`pb-${this.spacing(node.paddingBottom)}`);
+        if (node.paddingLeft)
+          classes.push(`pl-${this.spacing(node.paddingLeft)}`);
       }
     }
 
