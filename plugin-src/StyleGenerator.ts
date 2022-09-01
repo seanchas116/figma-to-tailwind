@@ -57,6 +57,9 @@ export class StyleGenerator {
   private borderRadiusKeywords = new Map<string, string>();
 
   private spacing(value: number): string {
+    if (value === 0) {
+      return "-0";
+    }
     return this.keywordOrJIT(this.spacingKeywords, `${value / 16}rem`);
   }
 
