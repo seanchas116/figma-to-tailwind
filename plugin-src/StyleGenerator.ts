@@ -38,9 +38,7 @@ export class StyleGenerator {
     for (const [keyword, value] of Object.entries(
       this.theme.borderWidth ?? {}
     )) {
-      if (keyword !== "DEFAULT") {
-        this.borderWidthKeywords.set(value, keyword);
-      }
+      this.borderWidthKeywords.set(value, keyword);
     }
   }
 
@@ -80,7 +78,14 @@ export class StyleGenerator {
   }
 
   private keywordOrJIT(keywords: Map<string, string>, value: string): string {
-    return keywords.get(value) ?? `[${value}]`;
+    const keyword = keywords.get(value);
+    if (keyword === "DEFAULT") {
+      return "";
+    }
+    if (keyword) {
+      return `-${keyword}`;
+    }
+    return `-[${value}]`;
   }
 
   position(
@@ -96,14 +101,14 @@ export class StyleGenerator {
       ("layoutPositioning" in node && node.layoutPositioning === "ABSOLUTE")
     ) {
       classes.push("absolute");
-      classes.push(`left-${this.spacing(node.x - groupTopLeft.x)}`);
-      classes.push(`top-${this.spacing(node.y - groupTopLeft.y)}`);
+      classes.push(`left${this.spacing(node.x - groupTopLeft.x)}`);
+      classes.push(`top${this.spacing(node.y - groupTopLeft.y)}`);
     } else {
       classes.push("relative");
     }
 
-    let widthClass: string | undefined = `w-${this.spacing(node.width)}`;
-    let heightClass: string | undefined = `h-${this.spacing(node.height)}`;
+    let widthClass: string | undefined = `w${this.spacing(node.width)}`;
+    let heightClass: string | undefined = `h${this.spacing(node.height)}`;
 
     if ("layoutGrow" in node) {
       if (parentLayout === "VERTICAL") {
@@ -164,7 +169,7 @@ export class StyleGenerator {
     }
 
     if (node.itemSpacing) {
-      classes.push(`gap-${this.spacing(node.itemSpacing)}`);
+      classes.push(`gap${this.spacing(node.itemSpacing)}`);
     }
     // style.paddingLeft = Math.max(0, node.paddingLeft - node.strokeWeight) + "px";
     // style.paddingRight =
@@ -179,26 +184,24 @@ export class StyleGenerator {
       node.paddingTop === node.paddingBottom &&
       node.paddingTop === node.paddingLeft
     ) {
-      if (node.paddingTop) classes.push(`p-${this.spacing(node.paddingTop)}`);
+      if (node.paddingTop) classes.push(`p${this.spacing(node.paddingTop)}`);
     } else {
       if (node.paddingTop === node.paddingBottom) {
-        if (node.paddingTop)
-          classes.push(`py-${this.spacing(node.paddingTop)}`);
+        if (node.paddingTop) classes.push(`py${this.spacing(node.paddingTop)}`);
       } else {
-        if (node.paddingTop)
-          classes.push(`pt-${this.spacing(node.paddingTop)}`);
+        if (node.paddingTop) classes.push(`pt${this.spacing(node.paddingTop)}`);
         if (node.paddingRight)
-          classes.push(`pr-${this.spacing(node.paddingRight)}`);
+          classes.push(`pr${this.spacing(node.paddingRight)}`);
       }
 
       if (node.paddingLeft === node.paddingRight) {
         if (node.paddingLeft)
-          classes.push(`px-${this.spacing(node.paddingLeft)}`);
+          classes.push(`px${this.spacing(node.paddingLeft)}`);
       } else {
         if (node.paddingBottom)
-          classes.push(`pb-${this.spacing(node.paddingBottom)}`);
+          classes.push(`pb${this.spacing(node.paddingBottom)}`);
         if (node.paddingLeft)
-          classes.push(`pl-${this.spacing(node.paddingLeft)}`);
+          classes.push(`pl${this.spacing(node.paddingLeft)}`);
       }
     }
 
@@ -272,20 +275,20 @@ export class StyleGenerator {
         node.strokeTopWeight === node.strokeRightWeight
       ) {
         if (node.strokeTopWeight) {
-          classes.push(`border-${this.borderWidth(node.strokeTopWeight)}`);
+          classes.push(`border${this.borderWidth(node.strokeTopWeight)}`);
         }
       } else {
         if (node.strokeTopWeight) {
-          classes.push(`border-t-${this.borderWidth(node.strokeTopWeight)}`);
+          classes.push(`border-t${this.borderWidth(node.strokeTopWeight)}`);
         }
         if (node.strokeBottomWeight) {
-          classes.push(`border-b-${this.borderWidth(node.strokeBottomWeight)}`);
+          classes.push(`border-b${this.borderWidth(node.strokeBottomWeight)}`);
         }
         if (node.strokeLeftWeight) {
-          classes.push(`border-l-${this.borderWidth(node.strokeLeftWeight)}`);
+          classes.push(`border-l${this.borderWidth(node.strokeLeftWeight)}`);
         }
         if (node.strokeRightWeight) {
-          classes.push(`border-r-${this.borderWidth(node.strokeRightWeight)}`);
+          classes.push(`border-r${this.borderWidth(node.strokeRightWeight)}`);
         }
       }
       classes.push(`border-[${borderColor}]`);
@@ -347,7 +350,7 @@ export class StyleGenerator {
 
     return compact([
       `font-['${fontFamily.replace(/\s+/g, "_")}']`,
-      `font-${this.fontWeight(fontWeight)}`,
+      `font${this.fontWeight(fontWeight)}`,
       italic ? "italic" : undefined,
     ]);
   }
@@ -362,7 +365,7 @@ export class StyleGenerator {
     classes.push(`text-${textAlign(node.textAlignHorizontal)}`);
 
     if (fontSize !== figma.mixed) {
-      classes.push(`text-${this.fontSize(fontSize)}`);
+      classes.push(`text${this.fontSize(fontSize)}`);
     }
     if (fontName !== figma.mixed) {
       classes.push(...this.fontName(fontName));
@@ -379,11 +382,9 @@ export class StyleGenerator {
 
     if (node.lineHeight !== figma.mixed && node.lineHeight.unit !== "AUTO") {
       if (node.lineHeight.unit === "PERCENT") {
-        classes.push(
-          `leading-${this.lineHeightPercent(node.lineHeight.value)}`
-        );
+        classes.push(`leading${this.lineHeightPercent(node.lineHeight.value)}`);
       } else {
-        classes.push(`leading-${this.lineHeightPx(node.lineHeight.value)}`);
+        classes.push(`leading${this.lineHeightPx(node.lineHeight.value)}`);
       }
     }
 
@@ -391,10 +392,10 @@ export class StyleGenerator {
     if (letterSpacing !== figma.mixed && letterSpacing.value !== 0) {
       if (letterSpacing.unit === "PERCENT") {
         classes.push(
-          `tracking-${this.letterSpacingPercent(letterSpacing.value)}`
+          `tracking${this.letterSpacingPercent(letterSpacing.value)}`
         );
       } else if (letterSpacing.unit === "PIXELS") {
-        classes.push(`tracking-[${letterSpacing.value}px]`);
+        classes.push(`tracking[${letterSpacing.value}px]`);
       }
     }
 
