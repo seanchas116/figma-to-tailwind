@@ -1,4 +1,4 @@
-import { figmaToMacaron } from "./traverse";
+import { HTMLGenerator } from "./HTMLGenerator";
 import { compact } from "lodash-es";
 import { MessageToPlugin, MessageToUI } from "../message";
 
@@ -20,9 +20,13 @@ async function generateContent() {
     };
   });
 
+  const htmlGenerator = new HTMLGenerator();
+
   const macaronLayers = compact(
     await Promise.all(
-      selection.map((node) => figmaToMacaron(node, undefined, { x: 0, y: 0 }))
+      selection.map((node) =>
+        htmlGenerator.generate(node, undefined, { x: 0, y: 0 })
+      )
     )
   );
 
