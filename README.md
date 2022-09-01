@@ -18,3 +18,10 @@ npm run dev
 - Click **Menu** > **Plugins** > **Development** > **Import plugin from manifest...**
   - Select `figma-to-tailwind/manifest.json`
 - Click **Menu** > **Plugins** > **Development** > **Figma to Tailwind**
+
+## To-do list
+
+- [x] JIT-only output
+- [ ] Custom configs
+- [ ] Un-JIT values
+- [ ] Publish to Figma Community
