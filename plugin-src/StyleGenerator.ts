@@ -5,6 +5,24 @@ import defaultConfig from "tailwindcss/defaultConfig";
 const defaultTheme = resolveConfig(defaultConfig).theme!;
 console.log(defaultTheme);
 
+function flattenTheme(theme: Record<string, any>): Record<string, string> {
+  const result: Record<string, string> = {};
+
+  function flatten(obj: Record<string, any>, prefix: string = "") {
+    for (const key in obj) {
+      const value = obj[key];
+      if (typeof value === "object") {
+        flatten(value, `${prefix}${key}-`);
+      } else {
+        result[`${prefix}${key}`] = value;
+      }
+    }
+  }
+
+  flatten(theme);
+  return result;
+}
+
 export class StyleGenerator {
   readonly theme = defaultTheme;
 
@@ -46,6 +64,13 @@ export class StyleGenerator {
     )) {
       this.borderRadiusKeywords.set(value, keyword);
     }
+
+    for (const [keyword, value] of Object.entries(
+      flattenTheme(this.theme.colors ?? {})
+    )) {
+      // TODO: normalize hex
+      this.colorKeywords.set(value.toLowerCase(), keyword);
+    }
   }
 
   private spacingKeywords = new Map<string, string>();
@@ -55,6 +80,7 @@ export class StyleGenerator {
   private fontSizeKeywords = new Map<string, string>();
   private borderWidthKeywords = new Map<string, string>();
   private borderRadiusKeywords = new Map<string, string>();
+  private colorKeywords = new Map<string, string>();
 
   private spacing(value: number): string {
     if (value === 0) {
@@ -89,6 +115,22 @@ export class StyleGenerator {
 
   private borderRadius(value: number): string {
     return this.keywordOrJIT(this.borderRadiusKeywords, `${value / 16}rem`);
+  }
+
+  private color(hex: string): string {
+    hex = hex.toLowerCase();
+
+    if (hex === "#ffffff") {
+      return "-white";
+    }
+    if (hex === "#000000") {
+      return "-black";
+    }
+    if (hex.length === 9 && hex.endsWith("00")) {
+      return "-transparent";
+    }
+
+    return this.keywordOrJIT(this.colorKeywords, hex);
   }
 
   private keywordOrJIT(keywords: Map<string, string>, value: string): string {
@@ -305,7 +347,9 @@ export class StyleGenerator {
           classes.push(`border-r${this.borderWidth(node.strokeRightWeight)}`);
         }
       }
-      classes.push(`border-[${borderColor}]`);
+      if (borderColor) {
+        classes.push(`border${this.color(borderColor)}`);
+      }
     }
 
     if (
@@ -347,7 +391,7 @@ export class StyleGenerator {
     const background =
       fill?.type === "SOLID" ? solidPaintToHex(fill) : undefined;
     if (background) {
-      classes.push(`bg-[${background}]`);
+      classes.push(`bg${this.color(background)}`);
     }
 
     return classes;
@@ -391,7 +435,7 @@ export class StyleGenerator {
         ...fills[0].color,
         a: fills[0].opacity ?? 1,
       });
-      classes.push(`text-[${textColor}]`);
+      classes.push(`text${this.color(textColor)}`);
     }
 
     if (node.lineHeight !== figma.mixed && node.lineHeight.unit !== "AUTO") {
