@@ -38,7 +38,9 @@ export class StyleGenerator {
     for (const [keyword, value] of Object.entries(
       this.theme.borderWidth ?? {}
     )) {
-      this.borderWidthKeywords.set(value, keyword);
+      if (keyword !== "DEFAULT") {
+        this.borderWidthKeywords.set(value, keyword);
+      }
     }
   }
 
