@@ -4,6 +4,7 @@
     "lib": ["ESNext"],
     "strict": true,
     "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
     "typeRoots": ["../node_modules/@figma", "../node_modules/@types"]
   }

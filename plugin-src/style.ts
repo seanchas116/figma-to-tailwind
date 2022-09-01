@@ -1,5 +1,10 @@
 import type * as CSS from "csstype";
 import { compact, rgbaToHex, solidPaintToHex } from "./util";
+import resolveConfig from "tailwindcss/resolveConfig";
+import defaultConfig from "tailwindcss/defaultConfig";
+const theme = resolveConfig(defaultConfig).theme!;
+
+console.log(theme);
 
 export function positionStyle(
   node: SceneNode,
