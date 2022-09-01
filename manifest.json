@@ -1,5 +1,5 @@
 {
-  "name": "figma-to-tailwind",
+  "name": "Figma to Tailwind",
   "id": "figma-to-tailwind",
   "api": "1.0.0",
   "main": "dist/code.js",
