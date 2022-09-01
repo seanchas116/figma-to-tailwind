@@ -1,6 +1,6 @@
 # figma-to-tailwind
 
-Figma nodes to Tailwind HTML/JSX (utilizing JIT and custom configs)
+Figma plugin to convert layers to Tailwind HTML/JSX (utilizing JIT and custom configs)
 
 ## Development
 
