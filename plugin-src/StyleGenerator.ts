@@ -40,6 +40,12 @@ export class StyleGenerator {
     )) {
       this.borderWidthKeywords.set(value, keyword);
     }
+
+    for (const [keyword, value] of Object.entries(
+      this.theme.borderRadius ?? {}
+    )) {
+      this.borderRadiusKeywords.set(value, keyword);
+    }
   }
 
   private spacingKeywords = new Map<string, string>();
@@ -48,6 +54,7 @@ export class StyleGenerator {
   private fontWeightKeywords = new Map<string, string>();
   private fontSizeKeywords = new Map<string, string>();
   private borderWidthKeywords = new Map<string, string>();
+  private borderRadiusKeywords = new Map<string, string>();
 
   private spacing(value: number): string {
     return this.keywordOrJIT(this.spacingKeywords, `${value / 16}rem`);
@@ -75,6 +82,10 @@ export class StyleGenerator {
 
   private borderWidth(value: number): string {
     return this.keywordOrJIT(this.borderWidthKeywords, `${value}px`);
+  }
+
+  private borderRadius(value: number): string {
+    return this.keywordOrJIT(this.borderRadiusKeywords, `${value / 16}rem`);
   }
 
   private keywordOrJIT(keywords: Map<string, string>, value: string): string {
@@ -300,20 +311,20 @@ export class StyleGenerator {
       node.topLeftRadius === node.bottomRightRadius
     ) {
       if (node.topLeftRadius) {
-        classes.push(`rounded-[${node.topLeftRadius}px]`);
+        classes.push(`rounded${this.borderRadius(node.topLeftRadius)}`);
       }
     } else {
       if (node.topLeftRadius) {
-        classes.push(`rounded-tl-[${node.topLeftRadius}px]`);
+        classes.push(`rounded-tl${this.borderRadius(node.topLeftRadius)}`);
       }
       if (node.topRightRadius) {
-        classes.push(`rounded-tr-[${node.topRightRadius}px]`);
+        classes.push(`rounded-tr${this.borderRadius(node.topRightRadius)}`);
       }
       if (node.bottomLeftRadius) {
-        classes.push(`rounded-bl-[${node.bottomLeftRadius}px]`);
+        classes.push(`rounded-bl${this.borderRadius(node.bottomLeftRadius)}`);
       }
       if (node.bottomRightRadius) {
-        classes.push(`rounded-br-[${node.bottomRightRadius}px]`);
+        classes.push(`rounded-br${this.borderRadius(node.bottomRightRadius)}`);
       }
     }
 
