@@ -52,40 +52,35 @@ export class StyleGenerator {
   private borderWidthKeywords = new Map<string, string>();
 
   private spacing(value: number): string {
-    if (value === 0) {
-      return "0";
-    }
-    return this.spacingKeywords.get(`${value / 16}rem`) ?? `[${value / 16}rem]`;
+    return this.keywordOrJIT(this.spacingKeywords, `${value / 16}rem`);
   }
 
   private lineHeightPx(value: number): string {
-    return (
-      this.lineHeightKeywords.get(`${value / 16}rem`) ?? `[${value / 16}rem]`
-    );
+    return this.keywordOrJIT(this.lineHeightKeywords, `${value / 16}rem`);
   }
 
   private lineHeightPercent(value: number): string {
-    return this.lineHeightKeywords.get(`${value / 100}`) ?? `[${value / 100}]`;
+    return this.keywordOrJIT(this.lineHeightKeywords, `${value / 100}`);
   }
 
   private letterSpacingPercent(value: number): string {
-    return (
-      this.letterSpacingKeywords.get(`${value / 100}em`) ?? `[${value / 100}em]`
-    );
+    return this.keywordOrJIT(this.letterSpacingKeywords, `${value / 100}em`);
   }
 
   private fontWeight(value: number): string {
-    return this.fontWeightKeywords.get(String(value)) ?? `[${value}]`;
+    return this.keywordOrJIT(this.fontWeightKeywords, `${value}`);
   }
 
   private fontSize(value: number): string {
-    return (
-      this.fontSizeKeywords.get(`${value / 16}rem`) ?? `[${value / 16}rem]`
-    );
+    return this.keywordOrJIT(this.fontSizeKeywords, `${value / 16}rem`);
   }
 
   private borderWidth(value: number): string {
-    return this.borderWidthKeywords.get(`${value}px`) ?? `[${value}px]`;
+    return this.keywordOrJIT(this.borderWidthKeywords, `${value}px`);
+  }
+
+  private keywordOrJIT(keywords: Map<string, string>, value: string): string {
+    return keywords.get(value) ?? `[${value}]`;
   }
 
   position(
