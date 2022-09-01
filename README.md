@@ -1,6 +1,6 @@
 # figma-to-tailwind
 
-Figma Layers to Tailwind HTML/JSX (utilizing JIT and custom configs)
+Figma nodes to Tailwind HTML/JSX (utilizing JIT and custom configs)
 
 ## Development
 
