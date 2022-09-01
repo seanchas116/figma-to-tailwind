@@ -41,9 +41,13 @@ export class HTMLGenerator {
         return h("img", {
           src: dataURL,
           className: twMerge(
-            this.styleGenerator.position(node, parentLayout, groupTopLeft),
-            this.styleGenerator.border(node),
-            this.styleGenerator.effect(node)
+            this.styleGenerator.positionClasses(
+              node,
+              parentLayout,
+              groupTopLeft
+            ),
+            this.styleGenerator.borderClasses(node),
+            this.styleGenerator.effectClasses(node)
           ),
         });
       }
@@ -65,8 +69,12 @@ export class HTMLGenerator {
           properties: {
             ...svgElem.properties,
             className: twMerge(
-              this.styleGenerator.position(node, parentLayout, groupTopLeft),
-              this.styleGenerator.effect(node as BlendMixin)
+              this.styleGenerator.positionClasses(
+                node,
+                parentLayout,
+                groupTopLeft
+              ),
+              this.styleGenerator.effectClasses(node as BlendMixin)
             ),
           },
         };
@@ -82,9 +90,13 @@ export class HTMLGenerator {
           "div",
           {
             className: twMerge(
-              this.styleGenerator.position(node, parentLayout, groupTopLeft),
-              this.styleGenerator.text(node),
-              this.styleGenerator.effect(node)
+              this.styleGenerator.positionClasses(
+                node,
+                parentLayout,
+                groupTopLeft
+              ),
+              this.styleGenerator.textClasses(node),
+              this.styleGenerator.effectClasses(node)
             ),
           },
           ...processCharacters(node.characters)
@@ -98,11 +110,15 @@ export class HTMLGenerator {
           "div",
           {
             className: twMerge(
-              this.styleGenerator.fill(node),
-              this.styleGenerator.border(node),
-              this.styleGenerator.layout(node),
-              this.styleGenerator.position(node, parentLayout, groupTopLeft),
-              this.styleGenerator.effect(node)
+              this.styleGenerator.fillClasses(node),
+              this.styleGenerator.borderClasses(node),
+              this.styleGenerator.layoutClasses(node),
+              this.styleGenerator.positionClasses(
+                node,
+                parentLayout,
+                groupTopLeft
+              ),
+              this.styleGenerator.effectClasses(node)
             ),
           },
           ...compact(
@@ -128,7 +144,11 @@ export class HTMLGenerator {
           "div",
           {
             className: twMerge(
-              this.styleGenerator.position(node, parentLayout, groupTopLeft)
+              this.styleGenerator.positionClasses(
+                node,
+                parentLayout,
+                groupTopLeft
+              )
             ),
           },
           ...compact(

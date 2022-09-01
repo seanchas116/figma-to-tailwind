@@ -144,7 +144,7 @@ export class StyleGenerator {
     return `-[${value}]`;
   }
 
-  position(
+  positionClasses(
     node: SceneNode,
     parentLayout: BaseFrameMixin["layoutMode"] | undefined,
     groupTopLeft: { x: number; y: number } = { x: 0, y: 0 }
@@ -212,7 +212,7 @@ export class StyleGenerator {
     return classes;
   }
 
-  layout(node: BaseFrameMixin): string[] {
+  layoutClasses(node: BaseFrameMixin): string[] {
     const classes: string[] = [];
 
     if (node.layoutMode === "NONE") {
@@ -313,7 +313,7 @@ export class StyleGenerator {
     return classes;
   }
 
-  border(node: BaseFrameMixin | RectangleNode): string[] {
+  borderClasses(node: BaseFrameMixin | RectangleNode): string[] {
     // TODO: A rectangle with single image fill should be treated as <img> rather than <div> with a background image
 
     const classes: string[] = [];
@@ -378,7 +378,7 @@ export class StyleGenerator {
     return classes;
   }
 
-  fill(node: BaseFrameMixin): string[] {
+  fillClasses(node: BaseFrameMixin): string[] {
     const classes: string[] = [];
 
     // TODO: support multiple fills
@@ -397,7 +397,7 @@ export class StyleGenerator {
     return classes;
   }
 
-  private fontName(font: FontName): string[] {
+  private fontNameClasses(font: FontName): string[] {
     const fontFamily = font.family;
 
     const style = font.style.toLowerCase();
@@ -413,7 +413,7 @@ export class StyleGenerator {
     ]);
   }
 
-  text(node: TextNode): string[] {
+  textClasses(node: TextNode): string[] {
     // TODO: split into spans when font styles are mixed
     const fontSize = node.getRangeFontSize(0, 1);
     const fontName = node.getRangeFontName(0, 1);
@@ -426,7 +426,7 @@ export class StyleGenerator {
       classes.push(`text${this.fontSize(fontSize)}`);
     }
     if (fontName !== figma.mixed) {
-      classes.push(...this.fontName(fontName));
+      classes.push(...this.fontNameClasses(fontName));
     }
 
     const fills = node.fills;
@@ -460,7 +460,7 @@ export class StyleGenerator {
     return classes;
   }
 
-  effect(node: BlendMixin): string[] {
+  effectClasses(node: BlendMixin): string[] {
     return compact([
       node.opacity !== 1 ? `opacity-[${node.opacity}]` : undefined,
     ]);
