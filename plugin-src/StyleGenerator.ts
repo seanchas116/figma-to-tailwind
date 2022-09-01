@@ -12,17 +12,78 @@ export class StyleGenerator {
     for (const [keyword, value] of Object.entries(this.theme.spacing ?? {})) {
       this.spacingKeywords.set(value, keyword);
     }
+
+    for (const [keyword, value] of Object.entries(
+      this.theme.lineHeight ?? {}
+    )) {
+      this.lineHeightKeywords.set(value, keyword);
+    }
+
+    for (const [keyword, value] of Object.entries(
+      this.theme.letterSpacing ?? {}
+    )) {
+      this.letterSpacingKeywords.set(value, keyword);
+    }
+
+    for (const [keyword, value] of Object.entries(
+      this.theme.fontWeight ?? {}
+    )) {
+      this.fontWeightKeywords.set(value, keyword);
+    }
+
+    for (const [keyword, value] of Object.entries(this.theme.fontSize ?? {})) {
+      this.fontSizeKeywords.set(value[0], keyword);
+    }
+
+    for (const [keyword, value] of Object.entries(
+      this.theme.borderWidth ?? {}
+    )) {
+      this.borderWidthKeywords.set(value, keyword);
+    }
   }
 
   private spacingKeywords = new Map<string, string>();
+  private lineHeightKeywords = new Map<string, string>();
+  private letterSpacingKeywords = new Map<string, string>();
+  private fontWeightKeywords = new Map<string, string>();
+  private fontSizeKeywords = new Map<string, string>();
+  private borderWidthKeywords = new Map<string, string>();
 
   private spacing(value: number): string {
-    const rem = value / 16;
-    const keyword = this.spacingKeywords.get(`${rem}rem`);
-    if (keyword) {
-      return keyword;
+    if (value === 0) {
+      return "0";
     }
-    return `[${rem}rem]`;
+    return this.spacingKeywords.get(`${value / 16}rem`) ?? `[${value / 16}rem]`;
+  }
+
+  private lineHeightPx(value: number): string {
+    return (
+      this.lineHeightKeywords.get(`${value / 16}rem`) ?? `[${value / 16}rem]`
+    );
+  }
+
+  private lineHeightPercent(value: number): string {
+    return this.lineHeightKeywords.get(`${value / 100}`) ?? `[${value / 100}]`;
+  }
+
+  private letterSpacingPercent(value: number): string {
+    return (
+      this.letterSpacingKeywords.get(`${value / 100}em`) ?? `[${value / 100}em]`
+    );
+  }
+
+  private fontWeight(value: number): string {
+    return this.fontWeightKeywords.get(String(value)) ?? `[${value}]`;
+  }
+
+  private fontSize(value: number): string {
+    return (
+      this.fontSizeKeywords.get(`${value / 16}rem`) ?? `[${value / 16}rem]`
+    );
+  }
+
+  private borderWidth(value: number): string {
+    return this.borderWidthKeywords.get(`${value}px`) ?? `[${value}px]`;
   }
 
   position(
@@ -214,20 +275,20 @@ export class StyleGenerator {
         node.strokeTopWeight === node.strokeRightWeight
       ) {
         if (node.strokeTopWeight) {
-          classes.push(`border-[${node.strokeTopWeight}px]`);
+          classes.push(`border-${this.borderWidth(node.strokeTopWeight)}`);
         }
       } else {
         if (node.strokeTopWeight) {
-          classes.push(`border-t-[${node.strokeTopWeight}px]`);
+          classes.push(`border-t-${this.borderWidth(node.strokeTopWeight)}`);
         }
         if (node.strokeBottomWeight) {
-          classes.push(`border-b-[${node.strokeBottomWeight}px]`);
+          classes.push(`border-b-${this.borderWidth(node.strokeBottomWeight)}`);
         }
         if (node.strokeLeftWeight) {
-          classes.push(`border-l-[${node.strokeLeftWeight}px]`);
+          classes.push(`border-l-${this.borderWidth(node.strokeLeftWeight)}`);
         }
         if (node.strokeRightWeight) {
-          classes.push(`border-r-[${node.strokeRightWeight}px]`);
+          classes.push(`border-r-${this.borderWidth(node.strokeRightWeight)}`);
         }
       }
       classes.push(`border-[${borderColor}]`);
@@ -289,7 +350,7 @@ export class StyleGenerator {
 
     return compact([
       `font-['${fontFamily.replace(/\s+/g, "_")}']`,
-      `font-[${fontWeight}]`,
+      `font-${this.fontWeight(fontWeight)}`,
       italic ? "italic" : undefined,
     ]);
   }
@@ -304,7 +365,7 @@ export class StyleGenerator {
     classes.push(`text-${textAlign(node.textAlignHorizontal)}`);
 
     if (fontSize !== figma.mixed) {
-      classes.push(`text-[${fontSize}px]`);
+      classes.push(`text-${this.fontSize(fontSize)}`);
     }
     if (fontName !== figma.mixed) {
       classes.push(...this.fontName(fontName));
@@ -321,16 +382,20 @@ export class StyleGenerator {
 
     if (node.lineHeight !== figma.mixed && node.lineHeight.unit !== "AUTO") {
       if (node.lineHeight.unit === "PERCENT") {
-        classes.push(`leading-[${node.lineHeight.value / 100}]`);
+        classes.push(
+          `leading-${this.lineHeightPercent(node.lineHeight.value)}`
+        );
       } else {
-        classes.push(`leading-[${node.lineHeight.value}px]`);
+        classes.push(`leading-${this.lineHeightPx(node.lineHeight.value)}`);
       }
     }
 
     const { letterSpacing } = node;
     if (letterSpacing !== figma.mixed && letterSpacing.value !== 0) {
       if (letterSpacing.unit === "PERCENT") {
-        classes.push(`tracking-[${letterSpacing.value / 100}em]`);
+        classes.push(
+          `tracking-${this.letterSpacingPercent(letterSpacing.value)}`
+        );
       } else if (letterSpacing.unit === "PIXELS") {
         classes.push(`tracking-[${letterSpacing.value}px]`);
       }
