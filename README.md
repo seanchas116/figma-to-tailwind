@@ -23,5 +23,5 @@ npm run dev
 
 - [x] JIT-only output
 - [ ] Custom configs
-- [ ] Un-JIT values
+- [x] Un-JIT values
 - [ ] Publish to Figma Community
