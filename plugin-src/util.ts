@@ -85,55 +85,6 @@ export function imageToDataURL(data: Uint8Array): string | undefined {
   }
 }
 
-export function toValidCSSIdentifier(original: string): string {
-  if (original.length === 0) {
-    return "_";
-  }
-  const result = [...original]
-    .map((c) => {
-      if (/[a-z0-9-_]/i.test(c)) {
-        return c;
-      }
-      // eslint-disable-next-line no-control-regex
-      if (/[^\u0000-\u00A0]/.test(c)) {
-        return c;
-      }
-      return "_";
-    })
-    .join("");
-
-  if (/^[0-9]/.exec(result)) {
-    return "_" + result;
-  }
-  return result;
-}
-
-export function incrementAlphanumeric(str: string): string {
-  const numMatches = /[1-9][0-9]*$/.exec(str);
-  if (numMatches) {
-    const numPart = numMatches[0];
-    const strPart = str.slice(0, str.length - numPart.length);
-
-    return `${strPart}${Number.parseInt(numPart) + 1}`;
-  }
-
-  return str + "1";
-}
-
-export class IDGenerator {
-  private ids = new Set<string>();
-  maxLength = 20;
-
-  generate(text: string): string {
-    let id = toValidCSSIdentifier(text).slice(0, this.maxLength);
-    while (this.ids.has(id)) {
-      id = incrementAlphanumeric(id);
-    }
-    this.ids.add(id);
-    return id;
-  }
-}
-
 export function kebabCase(str: string): string {
   return str.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
 }
