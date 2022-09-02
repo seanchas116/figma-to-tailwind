@@ -89,43 +89,35 @@ export const App: React.FC = () => {
         ))}
       </div>
       <div className="flex-1 min-h-0 relative">
-        <pre
-          className={clsx(
-            "rounded overflow-y-scroll bg-gray-800",
-            "absolute top-0 left-0 right-0 bottom-0",
-            {
-              "opacity-0 pointer-events-none": tab !== "code",
-            }
-          )}
-          hidden={tab !== "code"}
-        >
-          <code
-            className="language-jsx"
-            style={{
-              display: "block",
-              padding: "1rem",
-              whiteSpace: "pre-wrap",
-              fontSize: "10px",
-              background: "none",
-              fontFamily:
-                "ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace",
-            }}
-            dangerouslySetInnerHTML={{
-              __html: Prism.highlight(htmlOutput, Prism.languages.jsx, "jsx"),
-            }}
-          />
-        </pre>
-        <div
-          className={clsx(
-            "rounded border border-gray-200 overflow-hidden",
-            "absolute top-0 left-0 right-0 bottom-0",
-            {
-              "opacity-0 pointer-events-none": tab !== "preview",
-            }
-          )}
-        >
-          <Preview htmlOutput={htmlOutput} contentSize={contentSize} />
-        </div>
+        {tab === "code" && (
+          <pre
+            className={"rounded overflow-y-scroll bg-gray-800 h-full"}
+            hidden={tab !== "code"}
+          >
+            <code
+              className="language-jsx"
+              style={{
+                display: "block",
+                padding: "1rem",
+                whiteSpace: "pre-wrap",
+                fontSize: "10px",
+                background: "none",
+                fontFamily:
+                  "ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace",
+              }}
+              dangerouslySetInnerHTML={{
+                __html: Prism.highlight(htmlOutput, Prism.languages.jsx, "jsx"),
+              }}
+            />
+          </pre>
+        )}
+        {tab === "preview" && (
+          <div
+            className={"rounded border border-gray-200 overflow-hidden h-full"}
+          >
+            <Preview htmlOutput={htmlOutput} contentSize={contentSize} />
+          </div>
+        )}
       </div>
       <button
         className="bg-blue-500 text-white text-sm leading-8 h-8 rounded w-full"
