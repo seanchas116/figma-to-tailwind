@@ -9,8 +9,8 @@ import { twMerge } from "tailwind-merge";
 import { VectorLikeNodeChecker } from "./VectorLikeNodeChecker";
 
 export class HTMLGenerator {
-  styleGenerator = new StyleGenerator();
-  vectorLikeNodeChecker = new VectorLikeNodeChecker();
+  private readonly styleGenerator = new StyleGenerator();
+  private readonly vectorLikeNodeChecker = new VectorLikeNodeChecker();
 
   async generate(
     node: SceneNode,
