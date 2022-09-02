@@ -1,5 +1,5 @@
 import type * as CSS from "csstype";
-import { compact, rgbaToHex, solidPaintToHex } from "./util";
+import { compact, parseFontName, rgbaToHex, solidPaintToHex } from "./util";
 import resolveConfig from "tailwindcss/resolveConfig";
 import defaultConfig from "tailwindcss/defaultConfig";
 const defaultTheme = resolveConfig(defaultConfig).theme!;
@@ -398,17 +398,11 @@ export class StyleGenerator {
   }
 
   private fontNameClasses(font: FontName): string[] {
-    const fontFamily = font.family;
-
-    const style = font.style.toLowerCase();
-    const styleWithoutItalic = style.replace("italic", "").replace(/\s+/g, "");
-
-    const fontWeight = fontWeightForName[styleWithoutItalic] ?? 400;
-    const italic = style.includes("italic");
+    const { family, weight, italic } = parseFontName(font);
 
     return compact([
-      `font-['${fontFamily.replace(/\s+/g, "_")}']`,
-      `font${this.fontWeight(fontWeight)}`,
+      `font-['${family.replace(/\s+/g, "_")}']`,
+      `font${this.fontWeight(weight)}`,
       italic ? "italic" : undefined,
     ]);
   }
@@ -420,7 +414,20 @@ export class StyleGenerator {
 
     const classes: string[] = [];
 
-    classes.push(`text-${textAlign(node.textAlignHorizontal)}`);
+    classes.push(
+      (() => {
+        switch (node.textAlignHorizontal) {
+          case "CENTER":
+            return "text-center";
+          case "JUSTIFIED":
+            return "text-justify";
+          case "LEFT":
+            return "text-left";
+          case "RIGHT":
+            return "text-right";
+        }
+      })()
+    );
 
     if (fontSize !== figma.mixed) {
       classes.push(`text${this.fontSize(fontSize)}`);
@@ -466,28 +473,3 @@ export class StyleGenerator {
     ]);
   }
 }
-
-function textAlign(align: TextNode["textAlignHorizontal"]): string {
-  switch (align) {
-    case "CENTER":
-      return "center";
-    case "JUSTIFIED":
-      return "justify";
-    case "LEFT":
-      return "left";
-    case "RIGHT":
-      return "right";
-  }
-}
-
-const fontWeightForName: Record<string, number> = {
-  thin: 100,
-  extralight: 200,
-  light: 300,
-  regular: 400,
-  medium: 500,
-  semibold: 600,
-  bold: 700,
-  extrabold: 800,
-  black: 900,
-};
