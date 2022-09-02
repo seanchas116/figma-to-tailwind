@@ -3,12 +3,14 @@ import type * as hast from "hast";
 import { h } from "hastscript";
 // @ts-ignore
 import * as svgParser from "svg-parser";
-import { imageToDataURL, isVectorLikeNode, processCharacters } from "./util";
+import { imageToDataURL, processCharacters } from "./util";
 import { StyleGenerator } from "./StyleGenerator";
 import { twMerge } from "tailwind-merge";
+import { VectorLikeNodeChecker } from "./VectorLikeNodeChecker";
 
 export class HTMLGenerator {
   styleGenerator = new StyleGenerator();
+  vectorLikeNodeChecker = new VectorLikeNodeChecker();
 
   async generate(
     node: SceneNode,
@@ -53,7 +55,7 @@ export class HTMLGenerator {
       }
     }
 
-    if (isVectorLikeNode(node)) {
+    if (this.vectorLikeNodeChecker.check(node)) {
       try {
         const svg = await node.exportAsync({ format: "SVG" });
         const svgText = String.fromCharCode(...svg);

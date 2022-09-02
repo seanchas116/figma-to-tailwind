@@ -68,36 +68,6 @@ export function parseFontName(font: FontName): {
   };
 }
 
-const vectorLikeTypes: SceneNode["type"][] = [
-  "LINE",
-  "RECTANGLE",
-  "ELLIPSE",
-  "POLYGON",
-  "STAR",
-  "VECTOR",
-  "BOOLEAN_OPERATION",
-];
-
-const isVectorLikeNodeMemo = new WeakMap<SceneNode, boolean>();
-
-export function isVectorLikeNode(node: SceneNode): boolean {
-  const memo = isVectorLikeNodeMemo.get(node);
-  if (memo != null) {
-    return memo;
-  }
-
-  let result = false;
-  if (vectorLikeTypes.includes(node.type)) {
-    result = true;
-  } else if ("children" in node) {
-    result =
-      node.children.length !== 0 && node.children.every(isVectorLikeNode);
-  }
-
-  isVectorLikeNodeMemo.set(node, result);
-  return result;
-}
-
 export function svgToDataURL(svgText: string): string {
   const encoded = encodeURIComponent(svgText)
     .replace(/'/g, "%27")
