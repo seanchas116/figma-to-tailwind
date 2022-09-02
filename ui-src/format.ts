@@ -4,7 +4,7 @@ import parserBabel from "prettier/parser-babel";
 import parserHtml from "prettier/parser-html";
 
 const commonOptions: Options = {
-  printWidth: 1000,
+  //printWidth: 120,
 };
 
 export function formatJS(value: string): string {
