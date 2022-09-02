@@ -64,19 +64,15 @@ export class HTMLGenerator {
           throw new Error("Expected element type");
         }
 
+        const properties = { ...svgElem.properties };
+        delete properties.xmlns;
+        properties.className = twMerge(
+          this.styleGenerator.positionClasses(node, parentLayout, groupTopLeft),
+          this.styleGenerator.effectClasses(node as BlendMixin)
+        );
         return {
           ...svgElem,
-          properties: {
-            ...svgElem.properties,
-            className: twMerge(
-              this.styleGenerator.positionClasses(
-                node,
-                parentLayout,
-                groupTopLeft
-              ),
-              this.styleGenerator.effectClasses(node as BlendMixin)
-            ),
-          },
+          properties,
         };
       } catch (error) {
         console.error(`error exporting ${node.name} to SVG`);
