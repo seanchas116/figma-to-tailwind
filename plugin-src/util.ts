@@ -48,6 +48,15 @@ const fontWeightForName: Record<string, number> = {
   bold: 700,
   extrabold: 800,
   black: 900,
+  w1: 100,
+  w2: 200,
+  w3: 300,
+  w4: 400,
+  w5: 500,
+  w6: 600,
+  w7: 700,
+  w8: 800,
+  w9: 900,
 };
 
 export function parseFontName(font: FontName): {
