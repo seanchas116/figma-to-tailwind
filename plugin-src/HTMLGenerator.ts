@@ -106,14 +106,14 @@ export class HTMLGenerator {
           "div",
           {
             className: twMerge(
-              this.styleGenerator.fillClasses(node),
-              this.styleGenerator.borderClasses(node),
-              this.styleGenerator.layoutClasses(node),
               this.styleGenerator.positionClasses(
                 node,
                 parentLayout,
                 groupTopLeft
               ),
+              this.styleGenerator.layoutClasses(node),
+              this.styleGenerator.fillClasses(node),
+              this.styleGenerator.borderClasses(node),
               this.styleGenerator.effectClasses(node)
             ),
           },
