@@ -209,6 +209,10 @@ export class StyleGenerator {
       classes.push(heightClass);
     }
 
+    if ("clipsContent" in node && node.clipsContent) {
+      classes.push("overflow-hidden");
+    }
+
     return classes;
   }
 
@@ -304,10 +308,6 @@ export class StyleGenerator {
       if (node.counterAxisSizingMode == "AUTO") {
         classes.push(`h-fit`);
       }
-    }
-
-    if (node.clipsContent) {
-      classes.push("overflow-hidden");
     }
 
     return classes;
