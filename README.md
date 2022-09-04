@@ -24,4 +24,10 @@ npm run dev
 - [x] JIT-only output
 - [ ] Custom configs
 - [x] Un-JIT values
+- [ ] Generate multiple spans for text node
+- [ ] More CSS properties
+  - [ ] Shadows
+  - [ ] Gradients
+  - [ ] Text transform
+  - etc
 - [ ] Publish to Figma Community
