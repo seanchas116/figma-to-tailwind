@@ -17,6 +17,7 @@
     "tsc:watch": "concurrently -n widget,iframe \"npm run tsc:main -- --watch --preserveWatchOutput\" \"npm run tsc:ui -- --watch --preserveWatchOutput\""
   },
   "dependencies": {
+    "@mapbox/hast-util-to-jsx": "^2.0.0",
     "@types/hast": "^2.3.4",
     "buffer": "^6.0.3",
     "clsx": "^1.2.1",

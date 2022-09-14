@@ -6,8 +6,10 @@ import Prism from "prismjs";
 import "prismjs/components/prism-jsx";
 import "./main.css";
 import "prism-themes/themes/prism-material-dark.css";
-import { formatHTML } from "./format";
+import { formatHTML, formatJS } from "./format";
 import { toHtml } from "hast-util-to-html";
+// @ts-ignore
+import toJSX from "@mapbox/hast-util-to-jsx";
 import { startCase } from "lodash-es";
 import clsx from "clsx";
 
@@ -18,9 +20,12 @@ function postMessageToPlugin(data: MessageToPlugin): void {
 export const App: React.FC = () => {
   let htmlToCopyRef = useRef<string | undefined>();
   const [htmlOutput, setHTMLOutput] = useState("");
+  const [jsxOutput, setJSXOutput] = useState("");
   const [contentSize, setContentSize] = useState({ width: 0, height: 0 });
   const [tab, setTab] = useState<"code" | "preview">("code");
   const [format, setFormat] = useState<"html" | "jsx">("html");
+
+  const codeOutput = format === "html" ? htmlOutput : jsxOutput;
 
   useEffect(() => {
     const onDocumentCopy = (e: ClipboardEvent) => {
@@ -46,6 +51,7 @@ export const App: React.FC = () => {
         }
 
         setHTMLOutput(formatHTML(html));
+        setJSXOutput(formatJS(toJSX(root)));
         setContentSize({ width, height });
       }
     };
@@ -64,7 +70,7 @@ export const App: React.FC = () => {
   }, []);
 
   const onCopyButtonClick = () => {
-    htmlToCopyRef.current = htmlOutput;
+    htmlToCopyRef.current = codeOutput;
     document.execCommand("copy");
 
     postMessageToPlugin({
@@ -118,7 +124,7 @@ export const App: React.FC = () => {
                   "ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace",
               }}
               dangerouslySetInnerHTML={{
-                __html: Prism.highlight(htmlOutput, Prism.languages.jsx, "jsx"),
+                __html: Prism.highlight(codeOutput, Prism.languages.jsx, "jsx"),
               }}
             />
           </pre>
