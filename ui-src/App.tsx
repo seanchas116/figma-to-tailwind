@@ -20,6 +20,7 @@ export const App: React.FC = () => {
   const [htmlOutput, setHTMLOutput] = useState("");
   const [contentSize, setContentSize] = useState({ width: 0, height: 0 });
   const [tab, setTab] = useState<"code" | "preview">("code");
+  const [format, setFormat] = useState<"html" | "jsx">("html");
 
   useEffect(() => {
     const onDocumentCopy = (e: ClipboardEvent) => {
@@ -87,6 +88,17 @@ export const App: React.FC = () => {
             {startCase(_tab)}
           </button>
         ))}
+        <select
+          className="ml-auto text-sm"
+          value={format}
+          onChange={(e) => setFormat(e.target.value as any)}
+        >
+          {["html", "jsx"].map((_format) => (
+            <option key={_format} value={_format}>
+              {_format.toUpperCase()}
+            </option>
+          ))}
+        </select>
       </div>
       <div className="flex-1 min-h-0 relative">
         {tab === "code" && (
