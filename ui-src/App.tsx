@@ -95,7 +95,7 @@ export const App: React.FC = () => {
           </button>
         ))}
         <select
-          className="ml-auto text-sm"
+          className="ml-auto text-sm text-gray-900"
           value={format}
           onChange={(e) => setFormat(e.target.value as any)}
         >
