@@ -12,6 +12,8 @@ import { toHtml } from "hast-util-to-html";
 import toJSX from "@mapbox/hast-util-to-jsx";
 import { startCase } from "lodash-es";
 import clsx from "clsx";
+import { Icon } from "@iconify/react";
+import dedent from "dedent";
 
 function postMessageToPlugin(data: MessageToPlugin): void {
   parent.postMessage({ pluginMessage: data }, "*");
@@ -22,7 +24,7 @@ export const App: React.FC = () => {
   const [htmlOutput, setHTMLOutput] = useState("");
   const [jsxOutput, setJSXOutput] = useState("");
   const [contentSize, setContentSize] = useState({ width: 0, height: 0 });
-  const [tab, setTab] = useState<"code" | "preview">("code");
+  const [tab, setTab] = useState<"code" | "preview" | "config">("code");
   const [format, setFormat] = useState<"html" | "jsx">("html");
 
   const codeOutput = format === "html" ? htmlOutput : jsxOutput;
@@ -55,8 +57,8 @@ export const App: React.FC = () => {
           formatJS(toJSX(root)),
         ]);
 
-        setHTMLOutput(formattedHTML)
-        setJSXOutput(formattedJSX)
+        setHTMLOutput(formattedHTML);
+        setJSXOutput(formattedJSX);
         setContentSize({ width, height });
       }
     };
@@ -84,10 +86,12 @@ export const App: React.FC = () => {
     });
   };
 
+  const [showsConfig, setShowsConfig] = useState(false);
+
   return (
-    <div className="p-4 flex flex-col gap-4 h-screen w-screen">
+    <div className="p-4 flex flex-col gap-4 h-screen w-screen text-xs accent-blue-500">
       <div className="flex gap-1 -mx-1">
-        {(["code", "preview"] as const).map((_tab) => (
+        {(["code", "preview", "config"] as const).map((_tab) => (
           <button
             key={_tab}
             className={clsx("px-1 leading-4 text-sm", {
@@ -99,18 +103,43 @@ export const App: React.FC = () => {
             {startCase(_tab)}
           </button>
         ))}
-        <select
-          className="ml-auto text-sm text-gray-900"
-          value={format}
-          onChange={(e) => setFormat(e.target.value as any)}
-        >
-          {["html", "jsx"].map((_format) => (
-            <option key={_format} value={_format}>
-              {_format.toUpperCase()}
-            </option>
-          ))}
-        </select>
+        {tab === "code" && (
+          <>
+            <select
+              className="ml-auto text-sm text-gray-900"
+              value={format}
+              onChange={(e) => setFormat(e.target.value as any)}
+            >
+              {["html", "jsx"].map((_format) => (
+                <option key={_format} value={_format}>
+                  {_format.toUpperCase()}
+                </option>
+              ))}
+            </select>
+            <button
+              className="p-1 -my-1 text-base aria-checked:text-blue-500"
+              aria-checked={showsConfig}
+              onClick={(e) => {
+                setShowsConfig(!showsConfig);
+              }}
+            >
+              <Icon icon="material-symbols:settings-outline" />
+            </button>
+          </>
+        )}
       </div>
+      {showsConfig && tab === "code" && (
+        <div className="flex flex-col gap-2">
+          <label className="flex items-center gap-1">
+            <input type="checkbox" />
+            Emit font family
+          </label>
+          <label className="flex items-center gap-1">
+            <input type="checkbox" />
+            Emit layer names as comments
+          </label>
+        </div>
+      )}
       <div className="flex-1 min-h-0 relative">
         {tab === "code" && (
           <pre
@@ -123,7 +152,7 @@ export const App: React.FC = () => {
                 display: "block",
                 padding: "1rem",
                 whiteSpace: "pre-wrap",
-                fontSize: "10px",
+                fontSize: "11px",
                 background: "none",
                 fontFamily:
                   "ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace",
@@ -139,6 +168,39 @@ export const App: React.FC = () => {
             className={"rounded border border-gray-200 overflow-hidden h-full"}
           >
             <Preview htmlOutput={htmlOutput} contentSize={contentSize} />
+          </div>
+        )}
+        {tab === "config" && (
+          <div className="h-full flex flex-col">
+            <div className="mb-4">
+              <h2 className="font-medium mb-2">Tailwind Config</h2>
+              <div className="flex gap-2 items-center mb-2">
+                <p className="text-gray-500">Saved to current Figma file</p>
+                <span className="rounded-full w-1 h-1 bg-gray-300" />
+                <p className="text-gray-500">
+                  Currently only colors are supported
+                </p>
+              </div>
+              <button className="bg-gray-500 text-white py-1 px-2 rounded w-fit">
+                Import Figma variables & styles...
+              </button>
+            </div>
+            <textarea
+              placeholder={dedent`
+               export default {
+                  theme: {
+                    extend: {
+                      colors: {
+                        primary: {
+                          500: '#a0aec0',
+                        },
+                      },
+                    },
+                  },
+                };
+              `}
+              className="flex-1 border border-gray-200 outline-blue-500 bg-gray-100 rounded font-mono p-2"
+            />
           </div>
         )}
       </div>
@@ -207,8 +269,8 @@ const Preview: React.FC<{
             translate(${viewSize.width / 2}px, ${viewSize.height / 2}px)
             scale(${scale})
             translate(-${contentSize.width / 2}px, -${
-            contentSize.height / 2
-          }px)`,
+              contentSize.height / 2
+            }px)`,
         }}
         srcDoc={srcdoc}
       />

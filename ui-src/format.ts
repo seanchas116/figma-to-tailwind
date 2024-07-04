@@ -5,9 +5,13 @@ import * as pluginEstree from "prettier/plugins/estree";
 import * as pluginPostcss from "prettier/plugins/postcss";
 import * as pluginHtml from "prettier/plugins/html";
 
+const commonOptions: Options = {
+  printWidth: 1000,
+};
+
 export function formatJS(
   value: string,
-  options: Options = {}
+  options: Options = commonOptions
 ): Promise<string> {
   return prettier.format(value, {
     ...options,
@@ -18,7 +22,7 @@ export function formatJS(
 
 export function formatHTML(
   value: string,
-  options: Options = {}
+  options: Options = commonOptions
 ): Promise<string> {
   return prettier.format(value, {
     ...options,
