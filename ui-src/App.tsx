@@ -80,7 +80,7 @@ export const App: React.FC = () => {
 
     postMessageToPlugin({
       type: "notify",
-      data: "Copied to clipboard. Paste in Macaron",
+      data: "Copied to clipboard.",
     });
   };
 
