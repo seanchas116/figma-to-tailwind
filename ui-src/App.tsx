@@ -36,7 +36,7 @@ export const App: React.FC = () => {
       }
     };
 
-    const onWindowMessage = (e: MessageEvent) => {
+    const onWindowMessage = async (e: MessageEvent) => {
       const msg: MessageToUI = e.data.pluginMessage;
 
       if (msg.type === "change") {
@@ -50,8 +50,13 @@ export const App: React.FC = () => {
           height += size.height;
         }
 
-        setHTMLOutput(formatHTML(html));
-        setJSXOutput(formatJS(toJSX(root)));
+        const [formattedHTML, formattedJSX] = await Promise.all([
+          formatHTML(html),
+          formatJS(toJSX(root)),
+        ]);
+
+        setHTMLOutput(formattedHTML)
+        setJSXOutput(formattedJSX)
         setContentSize({ width, height });
       }
     };
