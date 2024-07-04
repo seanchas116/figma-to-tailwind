@@ -26,6 +26,11 @@ export const App: React.FC = () => {
   const [contentSize, setContentSize] = useState({ width: 0, height: 0 });
   const [tab, setTab] = useState<"code" | "preview">("code");
   const [format, setFormat] = useState<"html" | "jsx">("html");
+  const [emitsFontFamily, setEmitsFontFamily] = useState(false);
+  const [emitsLayerName, setEmitsLayerName] = useState(false);
+  const [colorNamingEnabled, setColorNamingEnabled] = useState(false);
+  const [colorNamingPrefix, setColorNamingPrefix] = useState("");
+  const [colorNamingAutoKebab, setColorNamingAutoKebab] = useState(false);
 
   const codeOutput = format === "html" ? htmlOutput : jsxOutput;
 
@@ -41,25 +46,36 @@ export const App: React.FC = () => {
     const onWindowMessage = async (e: MessageEvent) => {
       const msg: MessageToUI = e.data.pluginMessage;
 
-      if (msg.type === "change") {
-        const root = msg.data;
-        const html = toHtml(root).replaceAll("&#x27;", "'");
+      switch (msg.type) {
+        case "change": {
+          const root = msg.data;
+          const html = toHtml(root).replaceAll("&#x27;", "'");
 
-        let width = 0;
-        let height = 0;
-        for (const size of msg.sizes) {
-          width = Math.max(width, size.width);
-          height += size.height;
+          let width = 0;
+          let height = 0;
+          for (const size of msg.sizes) {
+            width = Math.max(width, size.width);
+            height += size.height;
+          }
+
+          const [formattedHTML, formattedJSX] = await Promise.all([
+            formatHTML(html),
+            formatJS(toJSX(root)),
+          ]);
+
+          setHTMLOutput(formattedHTML);
+          setJSXOutput(formattedJSX);
+          setContentSize({ width, height });
+          break;
         }
-
-        const [formattedHTML, formattedJSX] = await Promise.all([
-          formatHTML(html),
-          formatJS(toJSX(root)),
-        ]);
-
-        setHTMLOutput(formattedHTML);
-        setJSXOutput(formattedJSX);
-        setContentSize({ width, height });
+        case "getOptions": {
+          setColorNamingEnabled(msg.options.colorNaming?.enabled ?? false);
+          setColorNamingPrefix(msg.options.colorNaming?.prefix ?? "");
+          setColorNamingAutoKebab(msg.options.colorNaming?.autoKebab ?? false);
+          setEmitsFontFamily(msg.options.emitsFontFamily ?? false);
+          setEmitsLayerName(msg.options.emitsLayerName ?? false);
+          break;
+        }
       }
     };
 
@@ -75,6 +91,28 @@ export const App: React.FC = () => {
       document.removeEventListener("copy", onDocumentCopy);
     };
   }, []);
+
+  // set options
+  useEffect(() => {
+    postMessageToPlugin({
+      type: "setOptions",
+      options: {
+        emitsFontFamily,
+        emitsLayerName,
+        colorNaming: {
+          enabled: colorNamingEnabled,
+          prefix: colorNamingPrefix,
+          autoKebab: colorNamingAutoKebab,
+        },
+      },
+    });
+  }, [
+    emitsFontFamily,
+    emitsLayerName,
+    colorNamingEnabled,
+    colorNamingPrefix,
+    colorNamingAutoKebab,
+  ]);
 
   const onCopyButtonClick = () => {
     htmlToCopyRef.current = codeOutput;
@@ -131,32 +169,52 @@ export const App: React.FC = () => {
       {showsConfig && tab === "code" && (
         <div className="flex flex-col gap-2">
           <label className="flex items-center gap-1">
-            <input type="checkbox" />
+            <input
+              type="checkbox"
+              checked={emitsFontFamily}
+              onChange={(e) => setEmitsFontFamily(e.target.checked)}
+            />
             Font family
           </label>
           <label className="flex items-center gap-1">
-            <input type="checkbox" />
+            <input
+              type="checkbox"
+              checked={emitsLayerName}
+              onChange={(e) => setEmitsLayerName(e.target.checked)}
+            />
             Layer names as comments
           </label>
           <div className="flex flex-col gap-2">
             <label className="flex items-center gap-1">
-              <input type="checkbox" />
+              <input
+                type="checkbox"
+                checked={colorNamingEnabled}
+                onChange={(e) => setColorNamingEnabled(e.target.checked)}
+              />
               Automatically use named colors for variables / color styles
             </label>
-            <div className="flex items-center gap-4 pl-4">
-              <label className="flex items-center gap-1">
-                Prefix
-                <input
-                  type="text"
-                  placeholder="prefix-"
-                  className="w-20 border border-gray-200 px-1 rounded outline-blue-500"
-                />
-              </label>
-              <label className="flex items-center gap-1">
-                <input type="checkbox" />
-                Convert to kebab-case
-              </label>
-            </div>
+            {colorNamingEnabled && (
+              <div className="flex items-center gap-4 pl-4">
+                <label className="flex items-center gap-1">
+                  Prefix
+                  <input
+                    type="text"
+                    placeholder="prefix-"
+                    className="w-20 border border-gray-200 px-1 rounded outline-blue-500"
+                    value={colorNamingPrefix}
+                    onChange={(e) => setColorNamingPrefix(e.target.value)}
+                  />
+                </label>
+                <label className="flex items-center gap-1">
+                  <input
+                    type="checkbox"
+                    checked={colorNamingAutoKebab}
+                    onChange={(e) => setColorNamingAutoKebab(e.target.checked)}
+                  />
+                  Convert to kebab-case
+                </label>
+              </div>
+            )}
           </div>
         </div>
       )}

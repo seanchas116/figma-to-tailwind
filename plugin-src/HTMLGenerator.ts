@@ -7,10 +7,16 @@ import { imageToDataURL, processCharacters } from "./util";
 import { StyleGenerator } from "./StyleGenerator";
 import { twMerge } from "tailwind-merge";
 import { VectorLikeNodeChecker } from "./VectorLikeNodeChecker";
+import { CodeGenerationOptions } from "../message";
 
 export class HTMLGenerator {
+  readonly options: CodeGenerationOptions;
   private readonly styleGenerator = new StyleGenerator();
   private readonly vectorLikeNodeChecker = new VectorLikeNodeChecker();
+
+  constructor(options: CodeGenerationOptions) {
+    this.options = options;
+  }
 
   async generate(
     node: SceneNode,
