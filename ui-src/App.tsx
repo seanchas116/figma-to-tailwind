@@ -24,7 +24,7 @@ export const App: React.FC = () => {
   const [htmlOutput, setHTMLOutput] = useState("");
   const [jsxOutput, setJSXOutput] = useState("");
   const [contentSize, setContentSize] = useState({ width: 0, height: 0 });
-  const [tab, setTab] = useState<"code" | "preview" | "config">("code");
+  const [tab, setTab] = useState<"code" | "preview">("code");
   const [format, setFormat] = useState<"html" | "jsx">("html");
 
   const codeOutput = format === "html" ? htmlOutput : jsxOutput;
@@ -91,7 +91,7 @@ export const App: React.FC = () => {
   return (
     <div className="p-4 flex flex-col gap-4 h-screen w-screen text-xs accent-blue-500">
       <div className="flex gap-1 -mx-1">
-        {(["code", "preview", "config"] as const).map((_tab) => (
+        {(["code", "preview"] as const).map((_tab) => (
           <button
             key={_tab}
             className={clsx("px-1 leading-4 text-sm", {
@@ -188,39 +188,6 @@ export const App: React.FC = () => {
             className={"rounded border border-gray-200 overflow-hidden h-full"}
           >
             <Preview htmlOutput={htmlOutput} contentSize={contentSize} />
-          </div>
-        )}
-        {tab === "config" && (
-          <div className="h-full flex flex-col">
-            <div className="mb-4">
-              <h2 className="font-medium mb-2">Tailwind Config</h2>
-              <div className="flex gap-2 items-center mb-2">
-                <p className="text-gray-500">Saved to current Figma file</p>
-                <span className="rounded-full w-1 h-1 bg-gray-300" />
-                <p className="text-gray-500">
-                  Currently only colors are supported
-                </p>
-              </div>
-              <button className="bg-gray-500 text-white py-1 px-2 rounded w-fit">
-                Import Figma variables & styles...
-              </button>
-            </div>
-            <textarea
-              placeholder={dedent`
-               export default {
-                  theme: {
-                    extend: {
-                      colors: {
-                        primary: {
-                          500: '#a0aec0',
-                        },
-                      },
-                    },
-                  },
-                };
-              `}
-              className="flex-1 border border-gray-200 outline-blue-500 bg-gray-100 rounded font-mono p-2"
-            />
           </div>
         )}
       </div>
