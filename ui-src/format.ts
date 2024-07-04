@@ -1,24 +1,28 @@
 import type { Options } from "prettier";
-import prettier from "prettier/standalone";
-import parserBabel from "prettier/parser-babel";
-import parserHtml from "prettier/parser-html";
+import * as prettier from "prettier/standalone";
+import * as pluginBabel from "prettier/plugins/babel";
+import * as pluginEstree from "prettier/plugins/estree";
+import * as pluginPostcss from "prettier/plugins/postcss";
+import * as pluginHtml from "prettier/plugins/html";
 
-const commonOptions: Options = {
-  //printWidth: 120,
-};
-
-export function formatJS(value: string): string {
+export function formatJS(
+  value: string,
+  options: Options = {}
+): Promise<string> {
   return prettier.format(value, {
-    ...commonOptions,
+    ...options,
     parser: "babel",
-    plugins: [parserBabel],
+    plugins: [pluginEstree, pluginBabel],
   });
 }
 
-export function formatHTML(value: string): string {
+export function formatHTML(
+  value: string,
+  options: Options = {}
+): Promise<string> {
   return prettier.format(value, {
-    ...commonOptions,
+    ...options,
     parser: "html",
-    plugins: [parserHtml],
+    plugins: [pluginHtml, pluginPostcss],
   });
 }
