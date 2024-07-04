@@ -109,7 +109,7 @@ function variableToColorName(variable: Variable): string | undefined {
   if (variable.resolvedType !== "COLOR") {
     return;
   }
-  return variable.name.replaceAll("/", "-");
+  return variable.codeSyntax.WEB ?? variable.name;
 }
 
 export function getStrokeColorName(node: MinimalStrokesMixin) {
