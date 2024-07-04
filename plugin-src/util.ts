@@ -104,3 +104,52 @@ export function kebabCase(str: string): string {
 export function compact<T>(arr: (T | null | undefined)[]): T[] {
   return arr.filter(Boolean) as T[];
 }
+
+function variableToColorName(variable: Variable): string | undefined {
+  if (variable.resolvedType !== "COLOR") {
+    return;
+  }
+  return variable.name.replaceAll("/", "-");
+}
+
+export function getStrokeColorName(node: MinimalStrokesMixin) {
+  if (node.strokeStyleId) {
+    const style = figma.getStyleById(node.strokeStyleId);
+    if (style && style.type === "PAINT") {
+      return style.name;
+    }
+  }
+  const stroke = node.strokes.length ? node.strokes[0] : undefined;
+  if (stroke?.type === "SOLID" && stroke.boundVariables?.color) {
+    const boundVariable = stroke.boundVariables.color;
+    if (boundVariable) {
+      const variable = figma.variables.getVariableById(boundVariable.id);
+      if (variable) {
+        return variableToColorName(variable);
+      }
+    }
+  }
+}
+
+export function getFillColorName(node: MinimalFillsMixin) {
+  if (typeof node.fillStyleId === "string") {
+    const style = figma.getStyleById(node.fillStyleId);
+    if (style && style.type === "PAINT") {
+      return style.name;
+    }
+  }
+
+  // TODO: support multiple fills
+  const fill =
+    node.fills !== figma.mixed && node.fills.length ? node.fills[0] : undefined;
+
+  if (fill?.type === "SOLID" && fill.boundVariables?.color) {
+    const boundVariable = fill.boundVariables.color;
+    if (boundVariable) {
+      const variable = figma.variables.getVariableById(boundVariable.id);
+      if (variable) {
+        return variableToColorName(variable);
+      }
+    }
+  }
+}

@@ -1,5 +1,12 @@
 import type * as CSS from "csstype";
-import { compact, parseFontName, rgbaToHex, solidPaintToHex } from "./util";
+import {
+  compact,
+  getFillColorName,
+  getStrokeColorName,
+  parseFontName,
+  rgbaToHex,
+  solidPaintToHex,
+} from "./util";
 import resolveConfig from "tailwindcss/resolveConfig";
 import defaultConfig from "tailwindcss/defaultConfig";
 import { CodeGenerationOptions } from "../message";
@@ -351,7 +358,10 @@ export class StyleGenerator {
           classes.push(`border-r${this.borderWidth(node.strokeRightWeight)}`);
         }
       }
-      if (borderColor) {
+      const borderColorName = getStrokeColorName(node);
+      if (borderColorName) {
+        classes.push(`border-${borderColorName}`);
+      } else if (borderColor) {
         classes.push(`border${this.color(borderColor)}`);
       }
     }
@@ -390,6 +400,12 @@ export class StyleGenerator {
       node.fills !== figma.mixed && node.fills.length
         ? node.fills[0]
         : undefined;
+
+    const fillColorName = getFillColorName(node);
+    if (fillColorName) {
+      classes.push(`bg-${fillColorName}`);
+      return classes;
+    }
 
     // TODO: support gradient and image
     const background =
