@@ -85,6 +85,7 @@ figma.ui.onmessage = async (msg: MessageToPlugin) => {
     }
     case "setOptions": {
       setOptions(msg.options);
+      await generateContent();
       break;
     }
   }

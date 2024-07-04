@@ -11,11 +11,12 @@ import { CodeGenerationOptions } from "../message";
 
 export class HTMLGenerator {
   readonly options: CodeGenerationOptions;
-  private readonly styleGenerator = new StyleGenerator();
+  private readonly styleGenerator: StyleGenerator;
   private readonly vectorLikeNodeChecker = new VectorLikeNodeChecker();
 
   constructor(options: CodeGenerationOptions) {
     this.options = options;
+    this.styleGenerator = new StyleGenerator(options);
   }
 
   async generate(
@@ -127,7 +128,13 @@ export class HTMLGenerator {
           },
           ...compact(
             await Promise.all(
-              node.children.map((child) =>
+              node.children.flatMap((child) => [
+                this.options.emitsLayerName
+                  ? ({
+                      type: "comment",
+                      value: ` ${child.name} `,
+                    } satisfies hast.Comment)
+                  : undefined,
                 this.generate(
                   child,
                   node.layoutMode,
@@ -137,8 +144,8 @@ export class HTMLGenerator {
                         y: node.strokeTopWeight,
                       }
                     : { x: 0, y: 0 }
-                )
-              )
+                ),
+              ])
             )
           )
         );

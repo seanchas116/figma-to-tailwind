@@ -2,6 +2,7 @@ import type * as CSS from "csstype";
 import { compact, parseFontName, rgbaToHex, solidPaintToHex } from "./util";
 import resolveConfig from "tailwindcss/resolveConfig";
 import defaultConfig from "tailwindcss/defaultConfig";
+import { CodeGenerationOptions } from "../message";
 const defaultTheme = resolveConfig(defaultConfig).theme!;
 console.log(defaultTheme);
 
@@ -25,8 +26,11 @@ function flattenTheme(theme: Record<string, any>): Record<string, string> {
 
 export class StyleGenerator {
   readonly theme = defaultTheme;
+  readonly options: CodeGenerationOptions;
 
-  constructor() {
+  constructor(options: CodeGenerationOptions) {
+    this.options = options;
+
     for (const [keyword, value] of Object.entries(this.theme.spacing ?? {})) {
       this.spacingKeywords.set(value, keyword);
     }
@@ -401,7 +405,9 @@ export class StyleGenerator {
     const { family, weight, italic } = parseFontName(font);
 
     return compact([
-      `font-['${family.replace(/\s+/g, "_")}']`,
+      this.options.emitsFontFamily
+        ? `font-['${family.replace(/\s+/g, "_")}']`
+        : undefined,
       `font${this.fontWeight(weight)}`,
       italic ? "italic" : undefined,
     ]);
