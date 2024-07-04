@@ -132,12 +132,32 @@ export const App: React.FC = () => {
         <div className="flex flex-col gap-2">
           <label className="flex items-center gap-1">
             <input type="checkbox" />
-            Emit font family
+            Font family
           </label>
           <label className="flex items-center gap-1">
             <input type="checkbox" />
-            Emit layer names as comments
+            Layer names as comments
           </label>
+          <div className="flex flex-col gap-2">
+            <label className="flex items-center gap-1">
+              <input type="checkbox" />
+              Automatically use named colors for variables / color styles
+            </label>
+            <div className="flex items-center gap-4 pl-4">
+              <label className="flex items-center gap-1">
+                Prefix
+                <input
+                  type="text"
+                  placeholder="prefix-"
+                  className="w-20 border border-gray-200 px-1 rounded outline-blue-500"
+                />
+              </label>
+              <label className="flex items-center gap-1">
+                <input type="checkbox" />
+                Convert to kebab-case
+              </label>
+            </div>
+          </div>
         </div>
       )}
       <div className="flex-1 min-h-0 relative">
